@@ -10,6 +10,7 @@
        <svg
         ref="svg"
         :viewBox="viewBox"
+        @click="svgClicked"
         preserveAspectRatio="xMidYMid slice"
         class="overlay"
       >
@@ -33,6 +34,7 @@ const barcodeResults = ref([] as TextResult[]);
 const isSender = ref(false);
 const svg = ref<HTMLElement|null>(null);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'200px'});
+let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
 
@@ -43,15 +45,25 @@ onMounted(async () => {
   }else{
     console.log("not sender")
   }
-  alignLayout();
+  alignLayout(layout.value);
 })
 
-const alignLayout = () => {
+const svgClicked = () => {
+  let style = {top:'0px',left:'0px',width:'100%',height:'100%'};
+  if (fullSizeCamera) {
+    style = {top:'0px',left:'75%',width:'25%',height:'200px'};
+  }
+  fullSizeCamera = ! fullSizeCamera;
+  layout.value = style;
+  alignLayout(style);
+}
+
+const alignLayout = (style:any) => {
   if (svg.value) {
-    svg.value.style.top = layout.value.top;
-    svg.value.style.left = layout.value.left;
-    svg.value.style.width = layout.value.width;
-    svg.value.style.height = layout.value.height;
+    svg.value.style.top = style.top;
+    svg.value.style.left = style.left;
+    svg.value.style.width = style.width;
+    svg.value.style.height = style.height;
   }
 }
 
