@@ -11,6 +11,20 @@
           <ion-title size="large">Home</ion-title>
         </ion-toolbar>
       </ion-header>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Transfer via QR code</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          Click the buttons to send or receive a file via QR code.
+          <div class="buttons">
+            <ion-button>Send a File</ion-button>
+            <ion-button>Receive a File</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
     </ion-content>
   </ion-page>
 </template>
@@ -18,3 +32,16 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 </script>
+
+<style>
+.buttons {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.buttons ion-button {
+  width: 200px;
+}
+</style>
