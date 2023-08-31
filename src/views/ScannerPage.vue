@@ -19,20 +19,22 @@
           class="barcode-polygon"
         />
       </svg>
-      <div class="QRCode">
-        <QRCode v-if="!isSender"
-          :data="filesQR"
-        ></QRCode>
-        <AnimatedQRCode v-if="isSender"
-          :unit8Array="unit8Array"
-          :filename="filename"
-          :type="type"
-          :chunkSize="chunkSize"
-          :interval="QRCodeInterval"
-        ></AnimatedQRCode>
+      <div class="lower">
+        <div class="QRCode">
+          <AnimatedQRCode v-if="isSender && selectedFile"
+            :file="selectedFile"
+            :chunkSize="chunkSize"
+            :interval="QRCodeInterval"
+          ></AnimatedQRCode>
+          <QRCode v-if="!isSender"
+            :data="filesQR"
+          ></QRCode>
+        </div>
       </div>
       <div class="status">
-        <button @click="pickAFile">Pick a file</button>
+        <div v-if="isSender">
+          <button @click="pickAFile">Pick a file</button>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -45,7 +47,7 @@ import { IonPage, IonContent, useIonRouter } from '@ionic/vue';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
-import AnimatedQRCode from '@/components/AnimatedQRCode.vue';
+import AnimatedQRCode, { SelectedFile } from '@/components/AnimatedQRCode.vue';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 
 const viewBox = ref("0 0 1280 720");
@@ -53,12 +55,10 @@ const barcodeResults = ref([] as TextResult[]);
 const filesQR = ref("Dynamsoft");
 const isSender = ref(false);
 const svg = ref<HTMLElement|null>(null);
-const unit8Array = ref<Uint8Array>();
-const filename = ref("");
-const type = ref("");
+const selectedFile = ref<SelectedFile>();
 const chunkSize = ref(2000);
 const QRCodeInterval = ref(250);
-const layout = ref({top:'0px',left:'75%',width:'25%',height:'200px'});
+const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
@@ -69,6 +69,7 @@ onMounted(async () => {
     console.log("is sender");
   }else{
     console.log("not sender")
+    isSender.value = false;
     filesQR.value = "Dynamsoftasd asd ";
   }
   alignLayout(layout.value);
@@ -79,9 +80,12 @@ const pickAFile = async () => {
     readData:true
   });
   if (result.files.length>0) {
-    filename.value = result.files[0].name;
-    type.value = result.files[0].mimeType;
-    unit8Array.value = base64ToUnit8Array(result.files[0].data!);
+    console.log("picked");
+    selectedFile.value = {
+      unit8Array:base64ToUnit8Array(result.files[0].data!),
+      filename:result.files[0].name,
+      type:result.files[0].mimeType
+    }
   }
 }
 
@@ -103,7 +107,7 @@ const base64ToUnit8Array = (base64String:string) => {
 const svgClicked = () => {
   let style = {top:'0px',left:'0px',width:'100%',height:'100%'};
   if (fullSizeCamera) {
-    style = {top:'0px',left:'75%',width:'25%',height:'200px'};
+    style = {top:'0px',left:'75%',width:'25%',height:'150px'};
   }
   fullSizeCamera = ! fullSizeCamera;
   layout.value = style;
@@ -163,7 +167,26 @@ const getPointsData = (tr:TextResult) => {
  }
 
 .QRCode {
-  width: 512px;
-  height: 512px;
+  width: 440px;
+  height: 440px;
 }
+
+.status {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 75%;
+  height: 150px;
+  background: white;
+}
+
+.lower {
+  position: absolute;
+  top: 150px;
+  left: 0px;
+  width: 100%;
+  height: calc(100vh - 150px);
+  background: white;
+}
+
 </style>
