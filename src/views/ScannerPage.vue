@@ -68,4 +68,18 @@ const getPointsData = (tr:TextResult) => {
 </script>
 
 <style>
+.barcode-polygon {
+  fill:rgba(85,240,40,0.5);
+  stroke:green;
+  stroke-width:1;
+}
+
+.overlay {
+   top: 0;
+   left: 0;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   z-index: 998;
+ }
 </style>
