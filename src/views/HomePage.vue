@@ -19,8 +19,8 @@
         <ion-card-content>
           Click the buttons to send or receive a file via QR code.
           <div class="buttons">
-            <ion-button>Send a File</ion-button>
-            <ion-button>Receive a File</ion-button>
+            <ion-button @click="sendFile">Send a File</ion-button>
+            <ion-button @click="recieveFile">Receive a File</ion-button>
           </div>
         </ion-card-content>
       </ion-card>
@@ -30,7 +30,17 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
+const router = useIonRouter();
+
+const sendFile = () => {
+  router.push("/scanner?sender=true");
+}
+
+const recieveFile = () => {
+  router.push("/scanner?sender=false");
+}
+
 </script>
 
 <style>
