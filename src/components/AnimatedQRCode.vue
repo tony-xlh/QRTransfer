@@ -7,14 +7,20 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue";
-import QRCode from "./QRCode.vue";
-const props = defineProps(['unit8Array','filename','type','chunkSize','interval']);
+import QRCode from "./QRCode.vue"
+const props = defineProps({
+  unit8Array: Uint8Array,
+  filename: String,
+  type: String,
+  chunkSize: Number,
+  interval: Number
+})
 const chunk = ref<any>(null);
 let chunks:any[] = [];
 let currentIndex = 0;
 
 onMounted(async () => {
-  if (props.unit8Array) {
+  if (props.unit8Array && props.filename && props.type) {
     loadArrayBufferToChunks(props.unit8Array,props.filename,props.type)
     showAnimatedQRCode();
   }
@@ -23,7 +29,7 @@ onMounted(async () => {
 const loadArrayBufferToChunks = (bytes:Uint8Array,filename:string,type:string) => {
   console.log(bytes);
   var data = concatTypedArrays(stringToBytes(encodeURIComponent(filename)+"|"+type+"|"),bytes)
-  var chunkSize = parseInt(props.chunkSize ?? 2000);
+  var chunkSize = props.chunkSize ?? 2000;
   console.log("chunk size:"+chunkSize);
   var num = Math.ceil(data.length / chunkSize)
   chunks = [];
@@ -67,8 +73,10 @@ const concatTypedArrays = (a:any, b:any) => { //common array + unint8 array
 
 watch(() => props.unit8Array, (newVal, oldVal) => {
   if (newVal) {
-    loadArrayBufferToChunks(props.unit8Array,props.filename,props.type)
-    showAnimatedQRCode();
+    if (props.filename && props.type) {
+      loadArrayBufferToChunks(newVal,props.filename,props.type)
+      showAnimatedQRCode();
+    }
   }
 });
 
