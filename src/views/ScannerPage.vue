@@ -2,7 +2,9 @@
   <ion-page>
     <ion-content :fullscreen="true">
       <div class="QRCode">
-        <QRCode></QRCode>
+        <QRCode
+          :data="filesQR"
+        ></QRCode>
       </div>
       
       <QRCodeScanner
@@ -36,6 +38,7 @@ import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
 const viewBox = ref("0 0 1280 720");
 const barcodeResults = ref([] as TextResult[]);
+const filesQR = ref("Dynamsoft");
 const isSender = ref(false);
 const svg = ref<HTMLElement|null>(null);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'200px'});
@@ -50,6 +53,7 @@ onMounted(async () => {
   }else{
     console.log("not sender")
   }
+  filesQR.value = "Dynamsoftasd asd ";
   alignLayout(layout.value);
 })
 
