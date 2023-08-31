@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { DBR, Options, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
 import { PluginListenerHandle } from "@capacitor/core";
 
-const props = defineProps(['license','dceLicense','interval','torchOn','runtimeSettings']);
+const props = defineProps(['license','dceLicense','interval','torchOn','runtimeSettings','layout']);
 const emit = defineEmits(['onScanned','onPlayed']);
 const initialized = ref(false);
 let currentHeight = 0;
@@ -66,6 +66,9 @@ onMounted(async () => {
   if (props.dceLicense) {
     options.dceLicense = props.dceLicense;
   }
+  if (props.layout) {
+    setLayout();
+  }
   let result = await DBR.initialize(options); // To use your license: DBR.initialize({license: <your license>})
   console.log("QRCodeScanner mounted");
   if (result.success === true) {
@@ -86,9 +89,10 @@ onMounted(async () => {
       emit("onScanned",scanResult);
     });
 
-    onPlayedListener = await DBR.addListener("onPlayed", (result:{resolution:string}) => {
+    onPlayedListener = await DBR.addListener("onPlayed", async (result:{resolution:string}) => {
       currentWidth = parseInt(result.resolution.split("x")[0]);
       currentHeight = parseInt(result.resolution.split("x")[1]);
+      setLayout();
       emit("onPlayed",result.resolution);
     });
 
@@ -120,6 +124,17 @@ onMounted(async () => {
   }
 });
 
+const setLayout = async () => {
+  if (props.layout) {
+    await DBR.setLayout({
+      top:props.layout.top,
+      left:props.layout.left,
+      width:props.layout.width,
+      height:props.layout.height
+    })
+  }
+}
+
 onBeforeUnmount(() => {
   if (frameReadListener) {
     frameReadListener.remove();
@@ -132,19 +147,30 @@ onBeforeUnmount(() => {
 });
 
 watch(() => props.torchOn, (newVal, oldVal) => {
-  if (newVal === true) {
-    DBR.toggleTorch({on:true});
-  }else{
-    DBR.toggleTorch({on:false});
+  if (initialized) {
+    if (newVal === true) {
+      DBR.toggleTorch({on:true});
+    }else{
+      DBR.toggleTorch({on:false});
+    }
   }
 });
 
 watch(() => props.interval, (newVal, oldVal) => {
-  if (newVal) {
-    DBR.setInterval({interval:newVal});
+  if (initialized) {
+    if (newVal) {
+      DBR.setInterval({interval:newVal});
+    }
   }
 });
 
+watch(() => props.layout, (newVal, oldVal) => {
+  if (initialized) {
+    if (newVal) {
+      setLayout();
+    }
+  }
+});
 </script>
 
 <style scoped>

@@ -3,10 +3,12 @@
     <ion-content :fullscreen="true">
        <QRCodeScanner
         license="DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
+        :layout="layout"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
        ></QRCodeScanner>
        <svg
+        ref="svg"
         :viewBox="viewBox"
         preserveAspectRatio="xMidYMid slice"
         class="overlay"
@@ -29,6 +31,8 @@ import {getUrlParam } from '../utils';
 const viewBox = ref("0 0 1280 720");
 const barcodeResults = ref([] as TextResult[]);
 const isSender = ref(false);
+const svg = ref<HTMLElement|null>(null);
+const layout = ref({top:'0px',left:'75%',width:'25%',height:'200px'});
 let frameHeight = 720;
 let frameWidth = 1280;
 
@@ -39,7 +43,17 @@ onMounted(async () => {
   }else{
     console.log("not sender")
   }
+  alignLayout();
 })
+
+const alignLayout = () => {
+  if (svg.value) {
+    svg.value.style.top = layout.value.top;
+    svg.value.style.left = layout.value.left;
+    svg.value.style.width = layout.value.width;
+    svg.value.style.height = layout.value.height;
+  }
+}
 
 const onScanned = (result:ScanResult) => {
   console.log("onScanned");
