@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { DBR, Options, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
 import { PluginListenerHandle } from "@capacitor/core";
 
-const props = defineProps(['license','dceLicense','torchOn','runtimeSettings']);
+const props = defineProps(['license','dceLicense','interval','torchOn','runtimeSettings']);
 const emit = defineEmits(['onScanned','onPlayed']);
 const initialized = ref(false);
 let currentHeight = 0;
@@ -98,6 +98,10 @@ onMounted(async () => {
       await DBR.initRuntimeSettingsWithString({template:props.runtimeSettings});
     }
 
+    if (props.interval) {
+      await DBR.setInterval({interval:props.interval});
+    }
+
     let camerasResult = await DBR.getAllCameras();
     if (camerasResult.cameras) {
       for (let index = 0; index < camerasResult.cameras.length; index++) {
@@ -132,6 +136,12 @@ watch(() => props.torchOn, (newVal, oldVal) => {
     DBR.toggleTorch({on:true});
   }else{
     DBR.toggleTorch({on:false});
+  }
+});
+
+watch(() => props.interval, (newVal, oldVal) => {
+  if (newVal) {
+    DBR.setInterval({interval:newVal});
   }
 });
 
