@@ -1,12 +1,13 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true">
-      <!--<QRCodeScanner
+      <QRCodeScanner
         license="DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
         :layout="layout"
+        :interval="scanInterval"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
-      ></QRCodeScanner>-->
+      ></QRCodeScanner>
       <svg
         ref="svg"
         :viewBox="viewBox"
@@ -57,6 +58,7 @@ const isSender = ref(false);
 const svg = ref<HTMLElement|null>(null);
 const selectedFile = ref<SelectedFile>();
 const chunkSize = ref(2000);
+const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 let fullSizeCamera = false;
@@ -66,6 +68,7 @@ let frameWidth = 1280;
 onMounted(async () => {
   if (getUrlParam("sender") === "true") {
     isSender.value = true;
+    scanInterval.value = 10000;
     console.log("is sender");
   }else{
     console.log("not sender")
