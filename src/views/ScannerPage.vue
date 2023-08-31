@@ -8,6 +8,7 @@
        ></QRCodeScanner>
        <svg
         :viewBox="viewBox"
+        preserveAspectRatio="xMidYMid slice"
         class="overlay"
       >
         <polygon v-bind:key="'polygon'+index" v-for="(barcodeResult,index) in barcodeResults"
