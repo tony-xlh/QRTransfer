@@ -1,13 +1,17 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true">
-       <QRCodeScanner
+      <div class="QRCode">
+        <QRCode></QRCode>
+      </div>
+      
+      <QRCodeScanner
         license="DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
         :layout="layout"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
-       ></QRCodeScanner>
-       <svg
+      ></QRCodeScanner>
+      <svg
         ref="svg"
         :viewBox="viewBox"
         @click="svgClicked"
@@ -18,13 +22,14 @@
           :points="getPointsData(barcodeResult)"
           class="barcode-polygon"
         />
-    </svg>
+      </svg>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
+import QRCode from '@/components/QRCode.vue';
 import { IonPage, IonContent, useIonRouter } from '@ionic/vue';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
@@ -109,4 +114,9 @@ const getPointsData = (tr:TextResult) => {
    height: 100%;
    z-index: 998;
  }
+
+.QRCode {
+  width: 512px;
+  height: 512px;
+}
 </style>

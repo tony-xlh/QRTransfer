@@ -21,6 +21,7 @@
     "@ionic/vue-router": "^7.0.0",
     "capacitor-plugin-dynamsoft-barcode-reader": "^1.4.1",
     "ionicons": "^7.0.0",
+    "qrcode-generator": "^1.4.4",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
