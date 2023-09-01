@@ -73,7 +73,7 @@ let frameWidth = 1280;
 let startTime = 0;
 let framesRead = 0;
 let successNum =0;
-let code_results:any = {};
+let codeResults:any = {};
 let total = 0;
 
 onMounted(async () => {
@@ -189,7 +189,7 @@ const updateStatistics = (timeElapsed:number) => {
   statistics = statistics +"\ntotal frame number: " + framesRead;
   statistics = statistics +"\nsuccessful number: " + successNum;
   statistics = statistics +"\nsuccess fps: " + (successNum/(timeElapsed/1000)).toFixed(2);
-  statistics = statistics +"\nprogress: " + Object.keys(code_results).length + "/" + total;
+  statistics = statistics +"\nprogress: " + Object.keys(codeResults).length + "/" + total;
   scanningStatus.value = statistics;
 }
 
@@ -201,17 +201,15 @@ const processRead = (result:TextResult) => {
     if (total!=0){
       if (total != totalOfThisOne){
         total = totalOfThisOne;
-        code_results={};
+        codeResults={};
         return;
       }
     }
     
     total = totalOfThisOne;
     let index = parseInt(meta.split("/")[0]);
-    code_results[index]=result;
-    if (Object.keys(code_results).length === total){
-      console.log("completed");
-      console.log(code_results);
+    codeResults[index]=result;
+    if (Object.keys(codeResults).length === total){
       onCompleted();
     }
   } catch(error) {
@@ -227,35 +225,34 @@ const onCompleted = () => {
 }
 
 const showResult = async (timeElapsed:number) => {
-    let jointData:any[] = [];
-    let mimeType = "";
-    let filename = "";
-    for (let i=0;i<Object.keys(code_results).length;i++){
-        let index = i+1;
-        let result:TextResult = code_results[index];
-        let bytes = base64ToBytesArray(result.barcodeBytesBase64);
-        let text = result.barcodeText;
-        let data;
-        if (index == 1){
-            filename = text.split("|")[1]; //the first one contains filename|image/webp|data
-            mimeType = text.split("|")[2];
-            let firstSeparatorIndex = text.indexOf("|");
-            let secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
-            let dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
-            data = bytes.slice(dataStart,bytes.length);
-        }else{
-            let dataStart = text.indexOf("|")+1;
-            data = bytes.slice(dataStart,bytes.length);
-        }
-        jointData = jointData.concat(data);
+  let jointData:number[] = [];
+  let mimeType = "";
+  let filename = "";
+  for (let i=0;i<Object.keys(codeResults).length;i++){
+    let index = i+1;
+    let result:TextResult = codeResults[index];
+    let bytes = base64ToBytesArray(result.barcodeBytesBase64);
+    let text = result.barcodeText;
+    let data;
+    if (index == 1){
+      filename = text.split("|")[1]; //the first one contains filename|image/webp|data
+      mimeType = text.split("|")[2];
+      let firstSeparatorIndex = text.indexOf("|");
+      let secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
+      let dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
+      data = bytes.slice(dataStart,bytes.length);
+    }else{
+      let dataStart = text.indexOf("|")+1;
+      data = bytes.slice(dataStart,bytes.length);
     }
-    let dataURL:string = await BytesAsDataURL(jointData,mimeType);
-    scanned.value = dataURL;
-    
+    jointData = jointData.concat(data);
+  }
+  let dataURL:string = await BytesAsDataURL(jointData,mimeType);
+  scanned.value = dataURL;
 }
 
 //https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string
-const BytesAsDataURL = async (data:any,mimeType:string) => {
+const BytesAsDataURL = async (data:number[],mimeType:string) => {
   // Use a FileReader to generate a base64 data URI
   const dataUrl:string = await new Promise((r) => {
     const reader = new FileReader()
@@ -272,10 +269,10 @@ const BytesAsDataURL = async (data:any,mimeType:string) => {
   return dataUrl;
 }
 
-const ConvertToUInt8Array = (data:any) => {
+const ConvertToUInt8Array = (data:number[]) => {
   let array = new Uint8Array(data.length);
   for (let i=0;i<data.length;i++){
-      array[i] = data[i];
+    array[i] = data[i];
   }
   return array;
 }
