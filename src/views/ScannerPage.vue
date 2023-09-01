@@ -1,6 +1,24 @@
 <template>
   <ion-page>
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" class="content">
+      <ion-modal :is-open="isOpen" @willDismiss="onWillDismiss">
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button @click="cancel()">Cancel</ion-button>
+            </ion-buttons>
+            <ion-title>Received</ion-title>
+            <ion-buttons slot="end">
+              <ion-button :strong="true" @click="save()">Save</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <FileCard
+            :file="scannedFile"
+          ></FileCard>
+        </ion-content>
+      </ion-modal>
       <QRCodeScanner
         license="DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
         :layout="layout"
@@ -22,7 +40,7 @@
       </svg>
       <div class="lower">
         <div class="QRCode">
-          <div  v-if="isSender && selectedFile">
+          <div v-if="isSender && selectedFile">
             <div>{{ QRCodeCurrentIndex + "/" + QRCodeTotalNumber }}</div>
             <AnimatedQRCode
               :file="selectedFile"
@@ -32,7 +50,7 @@
             ></AnimatedQRCode>
           </div>
           <div>
-            <QRCode  v-if="!isSender"
+            <QRCode v-if="!isSender"
               :data="filesQR"
             ></QRCode>
           </div>
@@ -46,7 +64,6 @@
         </div>
         <div class="scanningStatus" v-if="!isSender">
           <pre>{{ scanningStatus }}</pre>
-          <div>{{ scanned }}</div>
         </div>
       </div>
     </ion-content>
@@ -56,7 +73,8 @@
 <script setup lang="ts">
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
 import QRCode from '@/components/QRCode.vue';
-import { IonPage, IonContent, useIonRouter } from '@ionic/vue';
+import FileCard, { ScannedFile } from '@/components/FileCard.vue';
+import { IonPage, IonButtons, IonButton, IonModal, IonHeader, IonToolbar, IonContent, IonTitle } from '@ionic/vue';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
@@ -74,9 +92,11 @@ const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
 const QRCodeTotalNumber = ref(0);
 const QRCodeCurrentIndex = ref(0);
+const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
 const scanned = ref("");
+const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:""});
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
@@ -98,6 +118,20 @@ onMounted(async () => {
   }
   alignLayout(layout.value);
 })
+
+const cancel = () => {
+  console.log("cancel")
+  isOpen.value = false;
+}
+
+const save = () => {
+  console.log("save")
+  isOpen.value = false;
+}
+
+const onWillDismiss = () => {
+  console.log("will dismiss");
+}
 
 const intervalChanged = (newVal:number) => {
   QRCodeInterval.value = newVal;
@@ -241,6 +275,11 @@ const processRead = (result:TextResult) => {
   }
 }
 
+const resetResults = () => {
+  codeResults={};
+  total = 0;
+}
+
 const onCompleted = () => {
   let endTime = new Date().getTime();
   let timeElapsed = endTime - startTime;
@@ -271,18 +310,20 @@ const showResult = async (timeElapsed:number) => {
     }
     jointData = jointData.concat(data);
   }
-  let dataURL:string = await BytesAsDataURL(jointData,mimeType);
-  scanned.value = dataURL;
+  let array = ConvertToUInt8Array(jointData);
+  let blob = new Blob([array],{type: mimeType});
+  let dataURL:string = await BlobAsDataURL(blob);
+  scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size};
+  isOpen.value = true;
+  resetResults();
 }
 
 //https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string
-const BytesAsDataURL = async (data:number[],mimeType:string) => {
+const BlobAsDataURL = async (blob:Blob) => {
   // Use a FileReader to generate a base64 data URI
   const dataUrl:string = await new Promise((r) => {
     const reader = new FileReader()
     reader.onload = () => r(reader.result as string)
-    let array = ConvertToUInt8Array(data);
-    let blob = new Blob([array],{type: mimeType});
     reader.readAsDataURL(blob)
   })
   /*
@@ -340,6 +381,10 @@ const ConvertToUInt8Array = (data:number[]) => {
   width: 100%;
   height: calc(100vh - 150px);
   background: white;
+}
+
+.content {
+  --background:"transparent";
 }
 
 </style>
