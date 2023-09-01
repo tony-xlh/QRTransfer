@@ -75,7 +75,7 @@
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
 import QRCode from '@/components/QRCode.vue';
 import FileCard from '@/components/FileCard.vue';
-import { IonPage, IonButtons, IonButton, IonModal, IonHeader, IonToolbar, IonContent, IonTitle } from '@ionic/vue';
+import { IonPage, IonButtons, IonButton, IonInput, IonModal, IonHeader, IonToolbar, IonContent, IonTitle } from '@ionic/vue';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
@@ -98,7 +98,7 @@ const scannerActive = ref(false);
 const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
-const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",date:new Date()});
+const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
@@ -315,7 +315,7 @@ const showResult = async (timeElapsed:number) => {
   let array = ConvertToUInt8Array(jointData);
   let blob = new Blob([array],{type: mimeType});
   let dataURL:string = await BlobAsDataURL(blob);
-  scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size,date:new Date()};
+  scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size,timestamp:new Date().getTime()};
   isOpen.value = true;
   resetResults();
 }

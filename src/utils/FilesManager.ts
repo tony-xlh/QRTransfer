@@ -5,7 +5,7 @@ export interface ScannedFile {
   filename:string
   mimeType:string
   filesize:number
-  date:Date
+  timestamp:number
 }
 
 export class FilesManager {
@@ -17,7 +17,7 @@ export class FilesManager {
   }
   
   async saveFile(file:ScannedFile) {
-    await this.store.setItem(file.date.getTime().toString(),JSON.stringify(file));
+    await this.store.setItem(file.timestamp.toString(),JSON.stringify(file));
   }
 
   async deleteFile(key:string) {
