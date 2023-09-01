@@ -97,7 +97,6 @@ const scannerActive = ref(false);
 const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
-const scanned = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:""});
 let fullSizeCamera = false;
 let frameHeight = 720;
@@ -314,7 +313,7 @@ const showResult = async (timeElapsed:number) => {
   let array = ConvertToUInt8Array(jointData);
   let blob = new Blob([array],{type: mimeType});
   let dataURL:string = await BlobAsDataURL(blob);
-  scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size};
+  scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size,date:new Date()};
   isOpen.value = true;
   resetResults();
 }
