@@ -39,11 +39,11 @@ export class FilesManager {
   }
 
   async listFiles(){
-    let files = [];
+    let files:ScannedFile[] = [];
     let keys = await this.getKeys();
     for (let index = 0; index < keys.length; index++) {
       const key = keys[index];
-      let file = this.getFile(key);
+      let file = await this.getFile(key);
       if (file) {
         files.push(file);
       }
