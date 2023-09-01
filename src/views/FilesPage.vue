@@ -11,7 +11,7 @@
           <ion-title size="large">Files</ion-title>
         </ion-toolbar>
       </ion-header>
-          <FileCard v-for="file in files" style="width:100%;"
+          <FileCard v-for="file in files"
             :file="file"
           ></FileCard>
     </ion-content>
