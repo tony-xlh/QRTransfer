@@ -6,8 +6,8 @@
     <ion-card-content>
       <div class="item">
         <ion-thumbnail slot="start" style="margin-right:10px;">
-          <img v-if="file.mimeType.indexOf('image') != -1" alt="image" :src="file.dataURL" />
-          <img v-else alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+          <img class="thumbnail" v-if="file.mimeType.indexOf('image') != -1" alt="image" :src="file.dataURL" />
+          <img class="thumbnail" v-else alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
         </ion-thumbnail>
         <div class="info">
           <ion-label>{{ "Filesize: " + (file.filesize/1000).toFixed(2) + "KB" }}</ion-label>
@@ -89,5 +89,9 @@ const dataURLtoBlob = (dataURL:string):Blob => {
 }
 .span {
   flex:1;
+}
+
+.thumbnail {
+  object-fit: contain;
 }
 </style>
