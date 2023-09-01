@@ -74,13 +74,14 @@
 <script setup lang="ts">
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
 import QRCode from '@/components/QRCode.vue';
-import FileCard, { ScannedFile } from '@/components/FileCard.vue';
+import FileCard from '@/components/FileCard.vue';
 import { IonPage, IonButtons, IonButton, IonModal, IonHeader, IonToolbar, IonContent, IonTitle } from '@ionic/vue';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
 import AnimatedQRCode, { SelectedFile } from '@/components/AnimatedQRCode.vue';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { FilesManager, ScannedFile } from '@/utils/FilesManager';
 
 const viewBox = ref("0 0 1280 720");
 const barcodeResults = ref([] as TextResult[]);
@@ -97,7 +98,7 @@ const scannerActive = ref(false);
 const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
-const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:""});
+const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",date:new Date()});
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
@@ -122,14 +123,15 @@ onMounted(async () => {
 })
 
 const cancel = () => {
-  console.log("cancel")
   isOpen.value = false;
   scannerActive.value = true;
 }
 
-const save = () => {
-  console.log("save")
+const save = async () => {
   isOpen.value = false;
+  let manager:FilesManager = new FilesManager();
+  await manager.saveFile(scannedFile.value);
+  scannerActive.value = true;
 }
 
 const intervalChanged = (newVal:number) => {
