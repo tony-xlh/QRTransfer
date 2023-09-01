@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true" class="content">
-      <ion-modal :is-open="isOpen" @willDismiss="onWillDismiss">
+      <ion-modal :is-open="isOpen">
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
@@ -23,6 +23,7 @@
         license="DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="
         :layout="layout"
         :interval="scanInterval"
+        :active="scannerActive"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
       ></QRCodeScanner>
@@ -92,6 +93,7 @@ const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
 const QRCodeTotalNumber = ref(0);
 const QRCodeCurrentIndex = ref(0);
+const scannerActive = ref(false);
 const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
@@ -113,6 +115,7 @@ onMounted(async () => {
     console.log("is sender");
   }else{
     console.log("not sender")
+    scannerActive.value = true;
     isSender.value = false;
     filesQR.value = "Dynamsoftasd asd ";
   }
@@ -122,15 +125,12 @@ onMounted(async () => {
 const cancel = () => {
   console.log("cancel")
   isOpen.value = false;
+  scannerActive.value = true;
 }
 
 const save = () => {
   console.log("save")
   isOpen.value = false;
-}
-
-const onWillDismiss = () => {
-  console.log("will dismiss");
 }
 
 const intervalChanged = (newVal:number) => {
@@ -281,6 +281,7 @@ const resetResults = () => {
 }
 
 const onCompleted = () => {
+  scannerActive.value = false;
   let endTime = new Date().getTime();
   let timeElapsed = endTime - startTime;
   updateStatistics(timeElapsed);
