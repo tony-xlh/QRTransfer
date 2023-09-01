@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { DBR, Options, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
 import { PluginListenerHandle } from "@capacitor/core";
 
-const props = defineProps(['license','dceLicense','interval','torchOn','runtimeSettings','layout']);
+const props = defineProps(['license','dceLicense','active','interval','torchOn','runtimeSettings','layout']);
 const emit = defineEmits(['onScanned','onPlayed']);
 const initialized = ref(false);
 let currentHeight = 0;
@@ -119,8 +119,9 @@ onMounted(async () => {
         }
       }
     }
-
-    await DBR.startScan();
+    if (props.active) {
+      await DBR.startScan();
+    }
     console.log("QRCodeScanner mounted");
   }
 });
@@ -169,6 +170,16 @@ watch(() => props.layout, (newVal, oldVal) => {
   if (initialized) {
     if (newVal) {
       setLayout();
+    }
+  }
+});
+
+watch(() => props.active, (newVal, oldVal) => {
+  if (initialized) {
+    if (newVal === true) {
+      DBR.startScan();
+    }else if (newVal === false){
+      DBR.stopScan();
     }
   }
 });
