@@ -34,7 +34,7 @@
       </div>
       <div class="status">
         <div v-if="isSender">
-          <ion-button @click="pickAFile">Pick a file</ion-button>
+          <ion-button size="small" @click="pickAFile">Pick a file</ion-button>
         </div>
         <div class="scanningStatus" v-if="!isSender">
           <pre>{{ scanningStatus }}</pre>
