@@ -70,7 +70,7 @@ onMounted(async () => {
     setLayout();
   }
   let result = await DBR.initialize(options); // To use your license: DBR.initialize({license: <your license>})
-  console.log("QRCodeScanner mounted");
+  console.log(result);
   if (result.success === true) {
     initialized.value = true;
     if (frameReadListener) {
@@ -121,6 +121,7 @@ onMounted(async () => {
     }
 
     await DBR.startScan();
+    console.log("QRCodeScanner mounted");
   }
 });
 
@@ -135,14 +136,14 @@ const setLayout = async () => {
   }
 }
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
   if (frameReadListener) {
     frameReadListener.remove();
   }
   if (onPlayedListener) {
     onPlayedListener.remove();
   }
-  DBR.stopScan();
+  await DBR.stopScan();
   console.log("QRCodeScanner unmount");
 });
 
