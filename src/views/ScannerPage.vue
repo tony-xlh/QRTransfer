@@ -104,28 +104,28 @@ const pickAFile = async () => {
 }
 
 const base64ToUnit8Array = (base64String:string) => {
-  var padding = '='.repeat((4 - base64String.length % 4) % 4);
-  var base64 = (base64String + padding)
+  let padding = '='.repeat((4 - base64String.length % 4) % 4);
+  let base64 = (base64String + padding)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
 
-  var rawData = window.atob(base64);
-  var outputArray = new Uint8Array(rawData.length);
+  let rawData = window.atob(base64);
+  let outputArray = new Uint8Array(rawData.length);
 
-  for (var i = 0; i < rawData.length; ++i) {
+  for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
 };
 
 const base64ToBytesArray = (base64String:string) => {
-  var padding = '='.repeat((4 - base64String.length % 4) % 4);
-  var base64 = (base64String + padding)
+  let padding = '='.repeat((4 - base64String.length % 4) % 4);
+  let base64 = (base64String + padding)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
-  var rawData = window.atob(base64);
-  var outputArray = [];
-  for (var i = 0; i < rawData.length; ++i) {
+  let rawData = window.atob(base64);
+  let outputArray = [];
+  for (let i = 0; i < rawData.length; ++i) {
     outputArray.push(rawData.charCodeAt(i));
   }
   return outputArray;
@@ -164,7 +164,7 @@ const onScanned = (result:ScanResult) => {
     successNum = successNum + 1;
     processRead(result.results[0]);
   };
-  var endTime = new Date().getTime();
+  let endTime = new Date().getTime();
   updateStatistics(endTime-startTime);
 }
 
@@ -194,10 +194,10 @@ const updateStatistics = (timeElapsed:number) => {
 }
 
 const processRead = (result:TextResult) => {
-  var text = result["barcodeText"];
+  let text = result["barcodeText"];
   try {
-    var meta = text.split("|")[0];
-    var totalOfThisOne = parseInt(meta.split("/")[1]);
+    let meta = text.split("|")[0];
+    let totalOfThisOne = parseInt(meta.split("/")[1]);
     if (total!=0){
       if (total != totalOfThisOne){
         total = totalOfThisOne;
@@ -207,7 +207,7 @@ const processRead = (result:TextResult) => {
     }
     
     total = totalOfThisOne;
-    var index = parseInt(meta.split("/")[0]);
+    let index = parseInt(meta.split("/")[0]);
     code_results[index]=result;
     if (Object.keys(code_results).length === total){
       console.log("completed");
@@ -220,37 +220,36 @@ const processRead = (result:TextResult) => {
 }
 
 const onCompleted = () => {
-  var endTime = new Date().getTime();
-  var timeElapsed = endTime - startTime;
+  let endTime = new Date().getTime();
+  let timeElapsed = endTime - startTime;
   updateStatistics(timeElapsed);
   showResult(timeElapsed);
 }
 
 const showResult = async (timeElapsed:number) => {
-    var jointData:any[] = [];
+    let jointData:any[] = [];
     let mimeType = "";
     let filename = "";
-    for (var i=0;i<Object.keys(code_results).length;i++){
-        var index = i+1;
-        var result:TextResult = code_results[index];
-        var bytes = base64ToBytesArray(result.barcodeBytesBase64);
-        var text = result.barcodeText;
+    for (let i=0;i<Object.keys(code_results).length;i++){
+        let index = i+1;
+        let result:TextResult = code_results[index];
+        let bytes = base64ToBytesArray(result.barcodeBytesBase64);
+        let text = result.barcodeText;
         let data;
         if (index == 1){
             filename = text.split("|")[1]; //the first one contains filename|image/webp|data
             mimeType = text.split("|")[2];
-            var firstSeparatorIndex = text.indexOf("|");
-            var secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
-            var dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
+            let firstSeparatorIndex = text.indexOf("|");
+            let secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
+            let dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
             data = bytes.slice(dataStart,bytes.length);
         }else{
-            var dataStart = text.indexOf("|")+1;
+            let dataStart = text.indexOf("|")+1;
             data = bytes.slice(dataStart,bytes.length);
         }
         jointData = jointData.concat(data);
     }
-    var dataURL:string = await BytesAsDataURL(jointData,mimeType);
-    console.log(dataURL);
+    let dataURL:string = await BytesAsDataURL(jointData,mimeType);
     scanned.value = dataURL;
     
 }
@@ -261,8 +260,8 @@ const BytesAsDataURL = async (data:any,mimeType:string) => {
   const dataUrl:string = await new Promise((r) => {
     const reader = new FileReader()
     reader.onload = () => r(reader.result as string)
-    var array = ConvertToUInt8Array(data);
-    var blob = new Blob([array],{type: mimeType});
+    let array = ConvertToUInt8Array(data);
+    let blob = new Blob([array],{type: mimeType});
     reader.readAsDataURL(blob)
   })
   /*
@@ -274,8 +273,8 @@ const BytesAsDataURL = async (data:any,mimeType:string) => {
 }
 
 const ConvertToUInt8Array = (data:any) => {
-  var array = new Uint8Array(data.length);
-  for (var i=0;i<data.length;i++){
+  let array = new Uint8Array(data.length);
+  for (let i=0;i<data.length;i++){
       array[i] = data[i];
   }
   return array;
