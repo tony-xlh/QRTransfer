@@ -365,6 +365,7 @@ const ConvertToUInt8Array = (data:number[]) => {
 .QRCode {
   width: 440px;
   height: 440px;
+  max-width: 100%;
 }
 
 .status {
