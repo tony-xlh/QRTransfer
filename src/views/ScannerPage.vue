@@ -22,14 +22,20 @@
       </svg>
       <div class="lower">
         <div class="QRCode">
-          <AnimatedQRCode v-if="isSender && selectedFile"
-            :file="selectedFile"
-            :chunkSize="chunkSize"
-            :interval="QRCodeInterval"
-          ></AnimatedQRCode>
-          <QRCode v-if="!isSender"
-            :data="filesQR"
-          ></QRCode>
+          <div  v-if="isSender && selectedFile">
+            <div>{{ QRCodeCurrentIndex + "/" + QRCodeTotalNumber }}</div>
+            <AnimatedQRCode
+              :file="selectedFile"
+              :chunkSize="chunkSize"
+              :interval="QRCodeInterval"
+              @on-animated="onAnimated"
+            ></AnimatedQRCode>
+          </div>
+          <div>
+            <QRCode  v-if="!isSender"
+              :data="filesQR"
+            ></QRCode>
+          </div>
         </div>
       </div>
       <div class="status">
@@ -66,6 +72,8 @@ const selectedFile = ref<SelectedFile>();
 const chunkSize = ref(2000);
 const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
+const QRCodeTotalNumber = ref(0);
+const QRCodeCurrentIndex = ref(0);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
 const scanned = ref("");
@@ -97,6 +105,11 @@ const intervalChanged = (newVal:number) => {
 
 const chunkSizeChanged = (newVal:number) => {
   chunkSize.value = newVal;
+}
+
+const onAnimated = (index:number,total:number) => {
+  QRCodeCurrentIndex.value = index;
+  QRCodeTotalNumber.value = total;
 }
 
 const pickAFile = async () => {

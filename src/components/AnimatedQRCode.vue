@@ -20,6 +20,10 @@ const props = defineProps<{
   interval: number
 }>()
 
+const emit = defineEmits<{
+  (e: 'onAnimated',index:number,total:number): void
+}>();
+
 const chunk = ref<any>(null);
 let chunks:any[] = [];
 let currentIndex = 0;
@@ -50,6 +54,7 @@ const loadArrayBufferToChunks = (bytes:Uint8Array,filename:string,type:string) =
 
 const showAnimatedQRCode = () => {
   chunk.value = chunks[currentIndex];
+  emit("onAnimated",currentIndex,chunks.length);
   currentIndex = currentIndex + 1
   if (currentIndex == chunks.length){
     currentIndex = 0;
