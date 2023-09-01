@@ -36,6 +36,10 @@
         <div v-if="isSender">
           <button @click="pickAFile">Pick a file</button>
         </div>
+        <div class="scanningStatus" v-if="!isSender">
+          <pre>{{ scanningStatus }}</pre>
+          <div>{{ scanned }}</div>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -61,9 +65,16 @@ const chunkSize = ref(2000);
 const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
+const scanningStatus = ref("");
+const scanned = ref("");
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
+let startTime = 0;
+let framesRead = 0;
+let successNum =0;
+let code_results:any = {};
+let total = 0;
 
 onMounted(async () => {
   if (getUrlParam("sender") === "true") {
@@ -107,6 +118,19 @@ const base64ToUnit8Array = (base64String:string) => {
   return outputArray;
 };
 
+const base64ToBytesArray = (base64String:string) => {
+  var padding = '='.repeat((4 - base64String.length % 4) % 4);
+  var base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+  var rawData = window.atob(base64);
+  var outputArray = [];
+  for (var i = 0; i < rawData.length; ++i) {
+    outputArray.push(rawData.charCodeAt(i));
+  }
+  return outputArray;
+};
+
 const svgClicked = () => {
   let style = {top:'0px',left:'0px',width:'100%',height:'100%'};
   if (fullSizeCamera) {
@@ -135,6 +159,13 @@ const onScanned = (result:ScanResult) => {
     viewBox.value = "0 0 " + frameWidth  + " " + frameHeight;
   }
   barcodeResults.value = result.results;
+  framesRead = framesRead + 1;
+  if (result.results.length > 0) {
+    successNum = successNum + 1;
+    processRead(result.results[0]);
+  };
+  var endTime = new Date().getTime();
+  updateStatistics(endTime-startTime);
 }
 
 const onPlayed = (resolution:string) => {
@@ -151,6 +182,105 @@ const getPointsData = (tr:TextResult) => {
   pointsData = pointsData + tr.x4+ "," + tr.y4;
   return pointsData;
 }
+
+const updateStatistics = (timeElapsed:number) => {
+  let statistics = "";
+  statistics = "elapsed time: " + (timeElapsed)/1000 +"s";
+  statistics = statistics +"\ntotal frame number: " + framesRead;
+  statistics = statistics +"\nsuccessful number: " + successNum;
+  statistics = statistics +"\nsuccess fps: " + (successNum/(timeElapsed/1000)).toFixed(2);
+  statistics = statistics +"\nprogress: " + Object.keys(code_results).length + "/" + total;
+  scanningStatus.value = statistics;
+}
+
+const processRead = (result:TextResult) => {
+  var text = result["barcodeText"];
+  try {
+    var meta = text.split("|")[0];
+    var totalOfThisOne = parseInt(meta.split("/")[1]);
+    if (total!=0){
+      if (total != totalOfThisOne){
+        total = totalOfThisOne;
+        code_results={};
+        return;
+      }
+    }
+    
+    total = totalOfThisOne;
+    var index = parseInt(meta.split("/")[0]);
+    code_results[index]=result;
+    if (Object.keys(code_results).length === total){
+      console.log("completed");
+      console.log(code_results);
+      onCompleted();
+    }
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+const onCompleted = () => {
+  var endTime = new Date().getTime();
+  var timeElapsed = endTime - startTime;
+  updateStatistics(timeElapsed);
+  showResult(timeElapsed);
+}
+
+const showResult = async (timeElapsed:number) => {
+    var jointData:any[] = [];
+    let mimeType = "";
+    let filename = "";
+    for (var i=0;i<Object.keys(code_results).length;i++){
+        var index = i+1;
+        var result:TextResult = code_results[index];
+        var bytes = base64ToBytesArray(result.barcodeBytesBase64);
+        var text = result.barcodeText;
+        let data;
+        if (index == 1){
+            filename = text.split("|")[1]; //the first one contains filename|image/webp|data
+            mimeType = text.split("|")[2];
+            var firstSeparatorIndex = text.indexOf("|");
+            var secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
+            var dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
+            data = bytes.slice(dataStart,bytes.length);
+        }else{
+            var dataStart = text.indexOf("|")+1;
+            data = bytes.slice(dataStart,bytes.length);
+        }
+        jointData = jointData.concat(data);
+    }
+    var dataURL:string = await BytesAsDataURL(jointData,mimeType);
+    console.log(dataURL);
+    scanned.value = dataURL;
+    
+}
+
+//https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string
+const BytesAsDataURL = async (data:any,mimeType:string) => {
+  // Use a FileReader to generate a base64 data URI
+  const dataUrl:string = await new Promise((r) => {
+    const reader = new FileReader()
+    reader.onload = () => r(reader.result as string)
+    var array = ConvertToUInt8Array(data);
+    var blob = new Blob([array],{type: mimeType});
+    reader.readAsDataURL(blob)
+  })
+  /*
+  The result looks like 
+  "data:application/octet-stream;base64,<your base64 data>", 
+  so we split off the beginning:
+  */
+  return dataUrl;
+}
+
+const ConvertToUInt8Array = (data:any) => {
+  var array = new Uint8Array(data.length);
+  for (var i=0;i<data.length;i++){
+      array[i] = data[i];
+  }
+  return array;
+}
+
 </script>
 
 <style>
