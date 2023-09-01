@@ -72,7 +72,6 @@ onMounted(async () => {
   let result = await DBR.initialize(options); // To use your license: DBR.initialize({license: <your license>})
   console.log(result);
   if (result.success === true) {
-    initialized.value = true;
     if (frameReadListener) {
       frameReadListener.remove();
     }
@@ -119,9 +118,10 @@ onMounted(async () => {
         }
       }
     }
-    if (props.active) {
+    if (props.active === true) {
       await DBR.startScan();
     }
+    initialized.value = true;
     console.log("QRCodeScanner mounted");
   }
 });
@@ -149,7 +149,7 @@ onBeforeUnmount(async () => {
 });
 
 watch(() => props.torchOn, (newVal, oldVal) => {
-  if (initialized) {
+  if (initialized.value) {
     if (newVal === true) {
       DBR.toggleTorch({on:true});
     }else{
@@ -159,7 +159,7 @@ watch(() => props.torchOn, (newVal, oldVal) => {
 });
 
 watch(() => props.interval, (newVal, oldVal) => {
-  if (initialized) {
+  if (initialized.value) {
     if (newVal) {
       DBR.setInterval({interval:newVal});
     }
@@ -167,7 +167,7 @@ watch(() => props.interval, (newVal, oldVal) => {
 });
 
 watch(() => props.layout, (newVal, oldVal) => {
-  if (initialized) {
+  if (initialized.value) {
     if (newVal) {
       setLayout();
     }
@@ -175,7 +175,7 @@ watch(() => props.layout, (newVal, oldVal) => {
 });
 
 watch(() => props.active, (newVal, oldVal) => {
-  if (initialized) {
+  if (initialized.value) {
     if (newVal === true) {
       DBR.startScan();
     }else if (newVal === false){
