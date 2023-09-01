@@ -24,13 +24,12 @@
           </div>
         </ion-card-content>
       </ion-card>
-
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
+import { IonCard, IonCardHeader, IonCardContent, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
 const router = useIonRouter();
 
 const sendFile = () => {
