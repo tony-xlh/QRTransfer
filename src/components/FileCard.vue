@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { ScannedFile } from '@/utils/FilesManager';
-import { IonButton,IonCard,IonCardContent,IonCardHeader,IonIcon } from '@ionic/vue';
+import { IonButton,IonCard,IonCardContent,IonCardTitle,IonCardHeader,IonLabel,IonThumbnail, IonIcon } from '@ionic/vue';
 import { shareOutline } from 'ionicons/icons';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';

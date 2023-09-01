@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonCard, IonCardHeader, IonCardContent, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
+import { IonButton, IonCardTitle, IonCard, IonCardHeader, IonCardContent, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
 const router = useIonRouter();
 
 const sendFile = () => {
