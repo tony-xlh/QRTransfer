@@ -6,7 +6,12 @@
 import qrcode from "qrcode-generator";
 import { onMounted, ref, watch } from "vue";
 const placeHolder = ref<HTMLElement|null>(null);
-const props = defineProps(['data','byteMode','typeNumber','errorCorrectionLevel']);
+const props = defineProps<{
+  data:any
+  byteMode?: "on"|"off"
+  typeNumber?: TypeNumber
+  errorCorrectionLevel?:ErrorCorrectionLevel
+}>()
 const originalFunction = (qrcode as any).stringToBytes;
 
 const toggleBytesMode = (on:boolean) => {
@@ -16,7 +21,6 @@ const toggleBytesMode = (on:boolean) => {
     (qrcode as any).stringToBytes = originalFunction;
   }
 }
-
 
 onMounted(async () => {
   if (props.byteMode === "on") {
