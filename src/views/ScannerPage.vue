@@ -196,6 +196,7 @@ const onPlayed = (resolution:string) => {
   const height = resolution.split("x")[1];
   frameWidth = parseInt(width);
   frameHeight = parseInt(height);
+  startTime = new Date().getTime();
 }
 
 const getPointsData = (tr:TextResult) => {
