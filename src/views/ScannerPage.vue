@@ -35,6 +35,8 @@
       <div class="status">
         <div v-if="isSender">
           <ion-button size="small" @click="pickAFile">Pick a file</ion-button>
+          <ion-input label="Chunk size:"  @change="chunkSizeChanged($event.target.value)" :value="chunkSize"></ion-input>
+          <ion-input label="Interval:" @change="intervalChanged($event.target.value)" :value="QRCodeInterval"></ion-input>
         </div>
         <div class="scanningStatus" v-if="!isSender">
           <pre>{{ scanningStatus }}</pre>
@@ -88,6 +90,14 @@ onMounted(async () => {
   }
   alignLayout(layout.value);
 })
+
+const intervalChanged = (newVal:number) => {
+  QRCodeInterval.value = newVal;
+}
+
+const chunkSizeChanged = (newVal:number) => {
+  chunkSize.value = newVal;
+}
 
 const pickAFile = async () => {
   const result = await FilePicker.pickFiles({

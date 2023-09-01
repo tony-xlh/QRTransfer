@@ -82,8 +82,6 @@ watch(() => props.file, (newVal, oldVal) => {
     showAnimatedQRCode();
   }
 });
-
-
 </script>
 
 <style scoped>
