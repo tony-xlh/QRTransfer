@@ -111,13 +111,11 @@ let total = 0;
 onMounted(async () => {
   if (getUrlParam("sender") === "true") {
     isSender.value = true;
-    scanInterval.value = 10000;
     console.log("is sender");
   }else{
     console.log("not sender")
     scannerActive.value = true;
     isSender.value = false;
-    filesQR.value = "Dynamsoftasd asd ";
   }
   alignLayout(layout.value);
 })
@@ -375,6 +373,7 @@ const ConvertToUInt8Array = (data:number[]) => {
   width: 75%;
   height: 150px;
   background: white;
+  color: black;
 }
 
 .lower {
