@@ -29,6 +29,7 @@ const chunk = ref<any>(null);
 let chunks:any[] = [];
 let chunksLeft:any[] = [];
 let currentIndex = 0;
+let interval:any;
 
 onMounted(async () => {
   if (props.file) {
@@ -36,7 +37,7 @@ onMounted(async () => {
     if (props.scannedIndex) {
       filterOutScannedChunks(props.scannedIndex);
     }
-    showAnimatedQRCode();
+    startLooping();
   }
 })
 
@@ -59,14 +60,25 @@ const loadArrayBufferToChunks = (bytes:Uint8Array,filename:string,type:string) =
   console.log(chunks);
 }
 
+const startLooping = () => {
+  stopLooping();
+  interval = setInterval(showAnimatedQRCode,props.interval ?? 400);
+}
+
+const stopLooping = () => {
+  if (interval) {
+    clearInterval(interval);
+    currentIndex = 0;
+  }
+}
+
 const showAnimatedQRCode = () => {
   chunk.value = chunksLeft[currentIndex];
   emit("onAnimated",currentIndex,chunksLeft.length,chunks.length);
   currentIndex = currentIndex + 1
   if (currentIndex >= chunksLeft.length){
     currentIndex = 0;
-  }
-  setTimeout(showAnimatedQRCode,props.interval ?? 1000);
+  }  
 }
 
 const stringToBytes = (s:any) => {
@@ -91,7 +103,7 @@ const concatTypedArrays = (a:any, b:any) => { //common array + unint8 array
 watch(() => props.file, (newVal, oldVal) => {
   if (newVal) {
     loadArrayBufferToChunks(newVal.unit8Array,newVal.filename,newVal.type);
-    showAnimatedQRCode();
+    startLooping();
   }
 });
 
