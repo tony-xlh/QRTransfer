@@ -11,6 +11,11 @@
           <ion-title size="large">About</ion-title>
         </ion-toolbar>
       </ion-header>
+      <div class="about">
+        <h2>QR Transfer</h2>
+        <p>This is a QR code scanner which can be used to transfer data between devices via QR codes.</p>
+        <p>Powered by Dynamsoft Barcode Reader.</p>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -18,3 +23,14 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 </script>
+<style scoped>
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding-top: 5%;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+</style>
