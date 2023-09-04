@@ -88,7 +88,7 @@
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
 import QRCode from '@/components/QRCode.vue';
 import FileCard from '@/components/FileCard.vue';
-import { IonPage, IonButtons, IonButton, IonInput, IonModal, IonHeader, IonToolbar, IonContent, IonTitle, useIonRouter } from '@ionic/vue';
+import { IonPage, IonButtons, IonButton, IonInput,IonIcon,IonFab,IonFabButton,IonActionSheet, IonModal, IonHeader, IonToolbar, IonContent, IonTitle, useIonRouter } from '@ionic/vue';
 import { ellipsisHorizontalOutline } from 'ionicons/icons';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
