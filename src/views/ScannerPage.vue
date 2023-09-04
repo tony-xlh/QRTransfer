@@ -274,7 +274,10 @@ const base64ToBytesArray = (base64String:string) => {
   let base64 = (base64String + padding)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
-  console.log(base64);
+  console.log(base64String.length);
+  console.log(base64.length);
+  base64 = base64.replace(/"\n"/g,"");
+  console.log(base64.length);
   let rawData = window.atob(base64);
   let outputArray = [];
   for (let i = 0; i < rawData.length; ++i) {
