@@ -144,6 +144,9 @@ const setLayout = async () => {
       width:props.layout.width,
       height:props.layout.height
     })
+    if (props.scanRegion) {
+      await DBR.setScanRegion(props.scanRegion);
+    }
   }
 }
 
