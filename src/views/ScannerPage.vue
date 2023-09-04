@@ -352,7 +352,7 @@ const getScannedIndex = () => {
   let keys = Object.keys(codeResults);
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
-    index.push(parseInt(key));
+    index.push(parseInt(key) - 1); //the index of codeResults starts from 1
   }
   return index;
 }
