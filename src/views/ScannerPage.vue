@@ -260,7 +260,6 @@ const base64ToUnit8Array = (base64String:string) => {
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
 
-  console.log(base64);
   let rawData = window.atob(base64);
   let outputArray = new Uint8Array(rawData.length);
 
@@ -275,6 +274,7 @@ const base64ToBytesArray = (base64String:string) => {
   let base64 = (base64String + padding)
     .replace(/\-/g, '+')
     .replace(/_/g, '/');
+  console.log(base64);
   let rawData = window.atob(base64);
   let outputArray = [];
   for (let i = 0; i < rawData.length; ++i) {
