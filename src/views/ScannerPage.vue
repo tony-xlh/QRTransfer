@@ -32,6 +32,7 @@
         :active="scannerActive"
         :runtimeSettings="runtimeSettings"
         :desiredCamera="desiredCamera"
+        :scanRegion="scanRegion"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
       ></QRCodeScanner>
@@ -96,7 +97,7 @@ import QRCode from '@/components/QRCode.vue';
 import FileCard from '@/components/FileCard.vue';
 import { IonPage, IonButtons, IonButton, IonInput,IonIcon,IonFab,IonFabButton,IonActionSheet, IonModal, IonHeader, IonToolbar, IonContent, IonTitle, useIonRouter } from '@ionic/vue';
 import { ellipsisHorizontalOutline } from 'ionicons/icons';
-import { DBR, ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
+import { DBR, ScanRegion, ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
 import AnimatedQRCode, { SelectedFile } from '@/components/AnimatedQRCode.vue';
@@ -125,6 +126,7 @@ const twoWayCommunication = ref(false);
 const scannedIndex = ref<number[]>();
 const runtimeSettings = ref("{\"ImageParameter\":{\"BarcodeFormatIds\":[\"BF_QR_CODE\"],\"ExpectedBarcodesCount\":1,\"Name\":\"Settings\"},\"Version\":\"3.0\"}");
 const desiredCamera = ref("");
+const scanRegion = ref<ScanRegion|undefined>(undefined)
 const speed = ref("");
 const seconds = ref("");
 const actionSheetButtons = [
@@ -312,6 +314,11 @@ const onPlayed = (resolution:string) => {
   const height = resolution.split("x")[1];
   frameWidth = parseInt(width);
   frameHeight = parseInt(height);
+  if (frameWidth>frameHeight) {
+    scanRegion.value = {top:10,bottom:80,left:15,right:85,measuredByPercentage:1};
+  }else{
+    scanRegion.value = {top:20,bottom:60,left:5,right:95,measuredByPercentage:1};
+  }
   startTime = new Date().getTime();
 }
 
