@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { DBR, Options, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
 import { PluginListenerHandle } from "@capacitor/core";
 
-const props = defineProps(['license','dceLicense','active','interval','torchOn','runtimeSettings','layout']);
+const props = defineProps(['license','dceLicense','active','desiredCamera','interval','torchOn','runtimeSettings','layout']);
 const emit = defineEmits(['onScanned','onPlayed']);
 const initialized = ref(false);
 let currentHeight = 0;
@@ -105,19 +105,7 @@ onMounted(async () => {
       await DBR.setInterval({interval:props.interval});
     }
 
-    let camerasResult = await DBR.getAllCameras();
-    if (camerasResult.cameras) {
-      for (let index = 0; index < camerasResult.cameras.length; index++) {
-        const cameraID = camerasResult.cameras[index];
-        if (cameraID.toLowerCase().indexOf("founder") != -1 ){
-          console.log(cameraID)
-          console.log("selct founder camera"); //the USB camera's name of the developer
-          let selectionResult = await DBR.selectCamera({cameraID:cameraID});
-          console.log(selectionResult);
-          break;
-        }
-      }
-    }
+    await selectDesiredCamera();
     if (props.active === true) {
       await DBR.startScan();
     }
@@ -183,6 +171,31 @@ watch(() => props.active, (newVal, oldVal) => {
     }
   }
 });
+
+watch(() => props.desiredCamera, async (newVal, oldVal) => {
+  if (initialized.value) {
+    if (newVal) {
+      selectDesiredCamera();
+    }
+  }
+});
+
+const selectDesiredCamera = async () => {
+  let camerasResult = await DBR.getAllCameras();
+  if (camerasResult.cameras) {
+    for (let index = 0; index < camerasResult.cameras.length; index++) {
+      const cameraID = camerasResult.cameras[index];
+      let desiredCameraString = "founder"; //the USB camera's name of the developer
+      if (props.desiredCamera) {
+        desiredCameraString = props.desiredCamera;
+      }
+      if (cameraID.toLowerCase().indexOf(desiredCameraString) != -1 ){
+        await DBR.selectCamera({cameraID:cameraID});
+        break;
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>

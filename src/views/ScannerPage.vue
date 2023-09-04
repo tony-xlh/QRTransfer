@@ -25,6 +25,7 @@
         :interval="scanInterval"
         :active="scannerActive"
         :runtimeSettings="runtimeSettings"
+        :desiredCamera="desiredCamera"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
       ></QRCodeScanner>
@@ -90,7 +91,7 @@ import QRCode from '@/components/QRCode.vue';
 import FileCard from '@/components/FileCard.vue';
 import { IonPage, IonButtons, IonButton, IonInput,IonIcon,IonFab,IonFabButton,IonActionSheet, IonModal, IonHeader, IonToolbar, IonContent, IonTitle, useIonRouter } from '@ionic/vue';
 import { ellipsisHorizontalOutline } from 'ionicons/icons';
-import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
+import { DBR, ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
 import AnimatedQRCode, { SelectedFile } from '@/components/AnimatedQRCode.vue';
@@ -118,6 +119,7 @@ const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL
 const twoWayCommunication = ref(false);
 const scannedIndex = ref<number[]>();
 const runtimeSettings = ref("{\"ImageParameter\":{\"BarcodeFormatIds\":[\"BF_QR_CODE\"],\"ExpectedBarcodesCount\":1,\"Name\":\"Settings\"},\"Version\":\"3.0\"}");
+const desiredCamera = ref("");
 const actionSheetButtons = [
   {
     text: 'Back',
@@ -129,6 +131,12 @@ const actionSheetButtons = [
     text: 'Toggle two-way communication',
     data: {
       action: 'toggle',
+    },
+  },
+  {
+    text: 'Switch camera',
+    data: {
+      action: 'switchcamera',
     },
   },
   {
@@ -162,7 +170,10 @@ onMounted(async () => {
   alignLayout(layout.value);
 })
 
-const setActionResult = (ev: CustomEvent) => {
+const setActionResult = async (ev: CustomEvent) => {
+  if (!ev.detail.data) {
+    return;
+  }
   if (ev.detail.data.action === "back") {
     router.back();
   }else if (ev.detail.data.action === "toggle") {
@@ -179,6 +190,28 @@ const setActionResult = (ev: CustomEvent) => {
     }
     filesQR.value = JSON.stringify(getScannedIndex());
     twoWayCommunication.value = !twoWayCommunication.value;
+  }else if (ev.detail.data.action === "switchcamera") {
+    let cameras = (await DBR.getAllCameras()).cameras;
+    let currentCameraName = (await DBR.getSelectedCamera()).selectedCamera;
+    console.log(cameras);
+    console.log(currentCameraName);
+    if (cameras && currentCameraName) {
+      let newIndex = 0;
+      for (let index = 0; index < cameras.length; index++) {
+        const name = cameras[index];
+        if (name.toLowerCase().indexOf(currentCameraName.toLowerCase()) != -1) {
+          if ((index + 1) > cameras.length -1) {
+            newIndex = 0;
+          }else{
+            newIndex = index + 1;
+          }
+          break;
+        }
+      }
+      console.log(newIndex);
+      console.log(cameras[newIndex]);
+      desiredCamera.value = cameras[newIndex].toLowerCase();
+    }
   }
 }
 
@@ -270,8 +303,6 @@ const alignLayout = (style:any) => {
 }
 
 const onScanned = (result:ScanResult) => {
-  console.log("onScanned");
-  console.log(result);
   if (result.deviceOrientation === "portrait") {
     viewBox.value = "0 0 " + frameHeight + " " + frameWidth;
   }else{
