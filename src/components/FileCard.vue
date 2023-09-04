@@ -18,6 +18,9 @@
           <ion-button @click="share" fill="clear">
             <ion-icon slot="icon-only" :icon="shareOutline"/>
           </ion-button>
+          <ion-button v-if="showDeleteButton" @click="remove" fill="clear">
+            <ion-icon slot="icon-only" :icon="trashOutline"/>
+          </ion-button>
         </div>
       </div>
     </ion-card-content>
@@ -27,14 +30,19 @@
 <script lang="ts" setup>
 import { ScannedFile } from '@/utils/FilesManager';
 import { IonButton,IonCard,IonCardContent,IonCardTitle,IonCardHeader,IonLabel,IonThumbnail, IonIcon } from '@ionic/vue';
-import { shareOutline } from 'ionicons/icons';
+import { shareOutline,trashOutline } from 'ionicons/icons';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { Capacitor } from "@capacitor/core";
 
 const props = defineProps<{
   file:ScannedFile
+  showDeleteButton?:boolean
 }>()
+
+const emit = defineEmits<{
+  (e: 'deleted'): void
+}>();
 
 const share = async () => {
   if (Capacitor.isNativePlatform()) {
@@ -69,12 +77,18 @@ const dataURLtoBlob = (dataURL:string):Blob => {
   return new Blob([new Uint8Array(array)], {type: mime});
 }
 
+const remove = () => {
+  emit("deleted");
+}
+
 </script>
 
 <style scoped>
 .item {
   display: flex;
   align-items: start;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .info {
@@ -92,6 +106,11 @@ const dataURLtoBlob = (dataURL:string):Blob => {
 }
 
 .thumbnail {
+  min-width: 20px;
   object-fit: contain;
+}
+
+.action {
+  display: flex;
 }
 </style>

@@ -11,8 +11,10 @@
           <ion-title size="large">Files</ion-title>
         </ion-toolbar>
       </ion-header>
-          <FileCard v-for="file in files"
+          <FileCard v-for="(file,index) in files"
             :file="file"
+            :show-delete-button="true"
+            @deleted="deteleFile(index)"
           ></FileCard>
     </ion-content>
   </ion-page>
@@ -24,10 +26,15 @@ import { FilesManager, ScannedFile } from '@/utils/FilesManager';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonList } from '@ionic/vue';
 import { onMounted, ref } from 'vue';
 
+let manager = new FilesManager();
 const files = ref<ScannedFile[]>([]);
 
-onMounted(async () => {
-  let manager = new FilesManager();
+onMounted(async () => {  
   files.value = await manager.listFiles();
 })
+
+const deteleFile = async (index:number) => {
+  await manager.deleteFile(files.value[index].timestamp.toString())
+  files.value = await manager.listFiles();
+}
 </script>
