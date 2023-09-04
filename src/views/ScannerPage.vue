@@ -192,8 +192,6 @@ const setActionResult = async (ev: CustomEvent) => {
   }else if (ev.detail.data.action === "switchcamera") {
     let cameras = (await DBR.getAllCameras()).cameras;
     let currentCameraName = (await DBR.getSelectedCamera()).selectedCamera;
-    console.log(cameras);
-    console.log(currentCameraName);
     if (cameras && currentCameraName) {
       let newIndex = 0;
       for (let index = 0; index < cameras.length; index++) {
@@ -207,8 +205,6 @@ const setActionResult = async (ev: CustomEvent) => {
           break;
         }
       }
-      console.log(newIndex);
-      console.log(cameras[newIndex]);
       desiredCamera.value = cameras[newIndex].toLowerCase();
     }
   }
@@ -255,12 +251,7 @@ const pickAFile = async () => {
 }
 
 const base64ToUnit8Array = (base64String:string) => {
-  let padding = '='.repeat((4 - base64String.length % 4) % 4);
-  let base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  let rawData = window.atob(base64);
+  let rawData = window.atob(base64String);
   let outputArray = new Uint8Array(rawData.length);
 
   for (let i = 0; i < rawData.length; ++i) {
@@ -270,15 +261,7 @@ const base64ToUnit8Array = (base64String:string) => {
 };
 
 const base64ToBytesArray = (base64String:string) => {
-  let padding = '='.repeat((4 - base64String.length % 4) % 4);
-  let base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-  console.log(base64String.length);
-  console.log(base64.length);
-  base64 = base64.replace(/"\n"/g,"");
-  console.log(base64.length);
-  let rawData = window.atob(base64);
+  let rawData = window.atob(base64String);
   let outputArray = [];
   for (let i = 0; i < rawData.length; ++i) {
     outputArray.push(rawData.charCodeAt(i));
@@ -406,8 +389,6 @@ const showResult = async (timeElapsed:number) => {
   for (let i=0;i<Object.keys(codeResults).length;i++){
     let index = i+1;
     let result:TextResult = codeResults[index];
-    console.log(index);
-    console.log(result.barcodeBytesBase64);
     let bytes = base64ToBytesArray(result.barcodeBytesBase64);
     let text = result.barcodeText;
     let data;
@@ -422,10 +403,8 @@ const showResult = async (timeElapsed:number) => {
       let dataStart = text.indexOf("|")+1;
       data = bytes.slice(dataStart,bytes.length);
     }
-    console.log(data);
     jointData = jointData.concat(data);
   }
-  console.log(jointData);
   let array = ConvertToUInt8Array(jointData);
   let blob = new Blob([array],{type: mimeType});
   let dataURL:string = await BlobAsDataURL(blob);
