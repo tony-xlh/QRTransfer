@@ -51,7 +51,7 @@
             ></AnimatedQRCode>
           </div>
           <div>
-            <QRCode v-if="!isSender"
+            <QRCode v-if="!isSender && twoWayCommunication"
               :data="filesQR"
             ></QRCode>
           </div>
@@ -112,21 +112,28 @@ const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
+const twoWayCommunication = ref(false);
 const actionSheetButtons = [
-      {
-        text: 'Back',
-        data: {
-          action: 'back',
-        },
-      },
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        data: {
-          action: 'cancel',
-        },
-      },
-    ];
+  {
+    text: 'Back',
+    data: {
+      action: 'back',
+    },
+  },
+  {
+    text: 'Toggle two-way communication',
+    data: {
+      action: 'toggle',
+    },
+  },
+  {
+    text: 'Cancel',
+    role: 'cancel',
+    data: {
+      action: 'cancel',
+    },
+  },
+];
 
 let fullSizeCamera = false;
 let frameHeight = 720;
@@ -152,6 +159,16 @@ onMounted(async () => {
 const setActionResult = (ev: CustomEvent) => {
   if (ev.detail.data.action === "back") {
     router.back();
+  }else if (ev.detail.data.action === "toggle") {
+    if (isSender.value === true) {
+      if (twoWayCommunication.value === false && scannerActive.value === false) {
+        scannerActive.value = true;
+      }
+      if (scannerActive.value === true && twoWayCommunication.value === true) {
+        scannerActive.value = false;
+      }
+    }
+    twoWayCommunication.value = !twoWayCommunication.value;
   }
 }
 
