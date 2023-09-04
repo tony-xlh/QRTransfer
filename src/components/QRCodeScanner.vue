@@ -4,11 +4,29 @@
 
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { DBR, Options, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
+import { DBR, Options, ScanRegion, ScanResult } from "capacitor-plugin-dynamsoft-barcode-reader";
 import { PluginListenerHandle } from "@capacitor/core";
 
-const props = defineProps(['license','dceLicense','active','desiredCamera','interval','torchOn','runtimeSettings','layout']);
-const emit = defineEmits(['onScanned','onPlayed']);
+const props = defineProps<{
+  license?: string
+  scanRegion?: ScanRegion
+  dceLicense?: string
+  active?: boolean
+  desiredCamera?: string
+  interval?: number
+  torchOn?: boolean
+  runtimeSettings?: string
+  layout:{
+        top: string;
+        left: string;
+        width: string;
+        height: string;
+    }
+}>()
+const emit = defineEmits<{
+  (e: 'onScanned',result:ScanResult): void
+  (e: 'onPlayed',resolution:string): void
+}>();
 const initialized = ref(false);
 let currentHeight = 0;
 let currentWidth = 0;
@@ -105,6 +123,10 @@ onMounted(async () => {
       await DBR.setInterval({interval:props.interval});
     }
 
+    if (props.scanRegion){
+      await DBR.setScanRegion(props.scanRegion);
+    }
+
     await selectDesiredCamera();
     if (props.active === true) {
       await DBR.startScan();
@@ -196,6 +218,14 @@ const selectDesiredCamera = async () => {
     }
   }
 }
+
+watch(() => props.scanRegion, async (newVal, oldVal) => {
+  if (initialized.value) {
+    if (newVal) {
+      await DBR.setScanRegion(newVal);
+    }
+  }
+});
 </script>
 
 <style scoped>
