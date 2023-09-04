@@ -32,7 +32,6 @@
       <svg
         ref="svg"
         :viewBox="viewBox"
-        @click="svgClicked"
         preserveAspectRatio="xMidYMid slice"
         class="overlay"
       >
@@ -282,16 +281,6 @@ const base64ToBytesArray = (base64String:string) => {
   }
   return outputArray;
 };
-
-const svgClicked = () => {
-  let style = {top:'0px',left:'0px',width:'100%',height:'100%'};
-  if (fullSizeCamera) {
-    style = {top:'0px',left:'75%',width:'25%',height:'150px'};
-  }
-  fullSizeCamera = ! fullSizeCamera;
-  layout.value = style;
-  alignLayout(style);
-}
 
 const alignLayout = (style:any) => {
   if (svg.value) {
