@@ -24,6 +24,7 @@
         :layout="layout"
         :interval="scanInterval"
         :active="scannerActive"
+        :runtimeSettings="runtimeSettings"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
       ></QRCodeScanner>
@@ -115,6 +116,7 @@ const scanningStatus = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
 const twoWayCommunication = ref(false);
 const scannedIndex = ref<number[]>();
+const runtimeSettings = ref("{\"ImageParameter\":{\"BarcodeFormatIds\":[\"BF_QR_CODE\"],\"ExpectedBarcodesCount\":1,\"Name\":\"Settings\"},\"Version\":\"3.0\"}");
 const actionSheetButtons = [
   {
     text: 'Back',
