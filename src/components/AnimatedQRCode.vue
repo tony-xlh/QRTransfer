@@ -22,11 +22,12 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'onAnimated',index:number,total:number): void
+  (e: 'onAnimated',index:number,chunksLeft:number,total:number): void
 }>();
 
 const chunk = ref<any>(null);
 let chunks:any[] = [];
+let chunksLeft:any[] = [];
 let currentIndex = 0;
 
 onMounted(async () => {
@@ -46,21 +47,23 @@ const loadArrayBufferToChunks = (bytes:Uint8Array,filename:string,type:string) =
   console.log("chunk size:"+chunkSize);
   var num = Math.ceil(data.length / chunkSize)
   chunks = [];
+  chunksLeft = [];
   for (var i=0;i<num;i++){
     var start = i*chunkSize;
     var chunk = data.slice(start,start+chunkSize);
     var meta = (i+1)+"/"+num+"|";
     chunk = concatTypedArrays(stringToBytes(meta),chunk);
     chunks.push(chunk);
+    chunksLeft.push(chunk);
   }
   console.log(chunks);
 }
 
 const showAnimatedQRCode = () => {
-  chunk.value = chunks[currentIndex];
-  emit("onAnimated",currentIndex,chunks.length);
+  chunk.value = chunksLeft[currentIndex];
+  emit("onAnimated",currentIndex,chunksLeft.length,chunks.length);
   currentIndex = currentIndex + 1
-  if (currentIndex >= chunks.length){
+  if (currentIndex >= chunksLeft.length){
     currentIndex = 0;
   }
   setTimeout(showAnimatedQRCode,props.interval ?? 1000);
@@ -99,10 +102,15 @@ watch(() => props.scannedIndex, (newVal, oldVal) => {
 });
 
 const filterOutScannedChunks = (scannedIndex:number[]) => {
-  scannedIndex.sort((a,b) => b - a); //descend
-  for (let i = 0; i < scannedIndex.length; i++) {
-    const index = scannedIndex[i];
-    chunks.splice(index,1);
+  //scannedIndex.sort((a,b) => b - a); //descend
+  if (scannedIndex.length>0) {
+    chunksLeft = [];
+    for (let index = 0; index < chunks.length; index++) {
+      const chunk = chunks[index];
+      if (scannedIndex.indexOf(index) === -1) {
+        chunksLeft.push(chunk);
+      }
+    }
   }
 }
 

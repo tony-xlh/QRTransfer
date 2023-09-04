@@ -43,7 +43,7 @@
       <div class="lower">
         <div class="QRCode">
           <div v-if="isSender && selectedFile">
-            <div>{{ (QRCodeCurrentIndex+1) + "/" + QRCodeTotalNumber }}</div>
+            <div>{{ (QRCodeCurrentIndex+1) + "/" + QRCodeChunksLeft }}</div>
             <AnimatedQRCode
               :file="selectedFile"
               :chunkSize="chunkSize"
@@ -107,6 +107,7 @@ const chunkSize = ref(2000);
 const scanInterval = ref(100);
 const QRCodeInterval = ref(250);
 const QRCodeTotalNumber = ref(0);
+const QRCodeChunksLeft = ref(0);
 const QRCodeCurrentIndex = ref(0);
 const scannerActive = ref(false);
 const router = useIonRouter();
@@ -198,8 +199,9 @@ const chunkSizeChanged = (newVal:number) => {
   chunkSize.value = newVal;
 }
 
-const onAnimated = (index:number,total:number) => {
+const onAnimated = (index:number,chunksLeft:number,total:number) => {
   QRCodeCurrentIndex.value = index;
+  QRCodeChunksLeft.value = chunksLeft;
   QRCodeTotalNumber.value = total;
 }
 
