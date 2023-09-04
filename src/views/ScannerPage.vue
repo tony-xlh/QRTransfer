@@ -402,6 +402,8 @@ const showResult = async (timeElapsed:number) => {
   for (let i=0;i<Object.keys(codeResults).length;i++){
     let index = i+1;
     let result:TextResult = codeResults[index];
+    console.log(index);
+    console.log(result.barcodeBytesBase64);
     let bytes = base64ToBytesArray(result.barcodeBytesBase64);
     let text = result.barcodeText;
     let data;
@@ -418,6 +420,7 @@ const showResult = async (timeElapsed:number) => {
     }
     jointData = jointData.concat(data);
   }
+  console.log(jointData);
   let array = ConvertToUInt8Array(jointData);
   let blob = new Blob([array],{type: mimeType});
   let dataURL:string = await BlobAsDataURL(blob);
