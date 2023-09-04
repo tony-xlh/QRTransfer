@@ -103,13 +103,11 @@ watch(() => props.scannedIndex, (newVal, oldVal) => {
 
 const filterOutScannedChunks = (scannedIndex:number[]) => {
   //scannedIndex.sort((a,b) => b - a); //descend
-  if (scannedIndex.length>0) {
-    chunksLeft = [];
-    for (let index = 0; index < chunks.length; index++) {
-      const chunk = chunks[index];
-      if (scannedIndex.indexOf(index) === -1) {
-        chunksLeft.push(chunk);
-      }
+  chunksLeft = [];
+  for (let index = 0; index < chunks.length; index++) {
+    const chunk = chunks[index];
+    if (scannedIndex.indexOf(index) === -1) {
+      chunksLeft.push(chunk);
     }
   }
 }

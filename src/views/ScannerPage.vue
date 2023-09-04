@@ -173,6 +173,9 @@ const setActionResult = (ev: CustomEvent) => {
       if (scannerActive.value === true && twoWayCommunication.value === true) {
         scannerActive.value = false;
       }
+      if (twoWayCommunication.value) {
+        scannedIndex.value = [];
+      }
     }
     filesQR.value = JSON.stringify(getScannedIndex());
     twoWayCommunication.value = !twoWayCommunication.value;
