@@ -223,6 +223,8 @@ watch(() => props.scanRegion, async (newVal, oldVal) => {
   if (initialized.value) {
     if (newVal) {
       await DBR.setScanRegion(newVal);
+    }else{
+      await DBR.setScanRegion({left:0,top:0,right:100,bottom:100,measuredByPercentage:1});
     }
   }
 });

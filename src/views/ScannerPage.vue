@@ -32,7 +32,7 @@
         :active="scannerActive"
         :runtimeSettings="runtimeSettings"
         :desiredCamera="desiredCamera"
-        :scanRegion="scanRegion"
+        :scanRegion="scanRegionEnabled?scanRegion:undefined"
         @onScanned="onScanned"
         @onPlayed="onPlayed"
       ></QRCodeScanner>
@@ -127,6 +127,7 @@ const scannedIndex = ref<number[]>();
 const runtimeSettings = ref("{\"ImageParameter\":{\"BarcodeFormatIds\":[\"BF_QR_CODE\"],\"ExpectedBarcodesCount\":1,\"Name\":\"Settings\"},\"Version\":\"3.0\"}");
 const desiredCamera = ref("");
 const scanRegion = ref<ScanRegion|undefined>(undefined)
+const scanRegionEnabled = ref(true);
 const speed = ref("");
 const seconds = ref("");
 const actionSheetButtons = [
@@ -139,7 +140,13 @@ const actionSheetButtons = [
   {
     text: 'Toggle two-way communication',
     data: {
-      action: 'toggle',
+      action: 'togglecommunication',
+    },
+  },
+  {
+    text: 'Toggle view finder',
+    data: {
+      action: 'toggleviewfinder',
     },
   },
   {
@@ -184,7 +191,7 @@ const setActionResult = async (ev: CustomEvent) => {
   }
   if (ev.detail.data.action === "back") {
     router.back();
-  }else if (ev.detail.data.action === "toggle") {
+  }else if (ev.detail.data.action === "togglecommunication") {
     if (isSender.value === true) {
       if (twoWayCommunication.value === false && scannerActive.value === false) {
         scannerActive.value = true;
@@ -198,6 +205,8 @@ const setActionResult = async (ev: CustomEvent) => {
     }
     filesQR.value = JSON.stringify(getScannedIndex());
     twoWayCommunication.value = !twoWayCommunication.value;
+  }else if (ev.detail.data.action === "toggleviewfinder") {
+    scanRegionEnabled.value = !scanRegionEnabled.value;
   }else if (ev.detail.data.action === "switchcamera") {
     let cameras = (await DBR.getAllCameras()).cameras;
     let currentCameraName = (await DBR.getSelectedCamera()).selectedCamera;
