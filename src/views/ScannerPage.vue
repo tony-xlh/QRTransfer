@@ -67,6 +67,17 @@
           <pre>{{ scanningStatus }}</pre>
         </div>
       </div>
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+        <ion-fab-button id="open-action-sheet">
+          <ion-icon :icon="ellipsisHorizontalOutline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      <ion-action-sheet 
+        trigger="open-action-sheet" 
+        header="Actions" 
+        :buttons="actionSheetButtons"
+        @didDismiss="setActionResult($event)"
+      ></ion-action-sheet>
     </ion-content>
   </ion-page>
 </template>
@@ -75,7 +86,8 @@
 import QRCodeScanner from '@/components/QRCodeScanner.vue';
 import QRCode from '@/components/QRCode.vue';
 import FileCard from '@/components/FileCard.vue';
-import { IonPage, IonButtons, IonButton, IonInput, IonModal, IonHeader, IonToolbar, IonContent, IonTitle } from '@ionic/vue';
+import { IonPage, IonButtons, IonButton, IonInput, IonModal, IonHeader, IonToolbar, IonContent, IonTitle, useIonRouter } from '@ionic/vue';
+import { ellipsisHorizontalOutline } from 'ionicons/icons';
 import { ScanResult, TextResult } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted, ref } from 'vue';
 import {getUrlParam } from '../utils';
@@ -95,10 +107,27 @@ const QRCodeInterval = ref(250);
 const QRCodeTotalNumber = ref(0);
 const QRCodeCurrentIndex = ref(0);
 const scannerActive = ref(false);
+const router = useIonRouter();
 const isOpen = ref(false);
 const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
+const actionSheetButtons = [
+      {
+        text: 'Back',
+        data: {
+          action: 'back',
+        },
+      },
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        data: {
+          action: 'cancel',
+        },
+      },
+    ];
+
 let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
@@ -119,6 +148,12 @@ onMounted(async () => {
   }
   alignLayout(layout.value);
 })
+
+const setActionResult = (ev: CustomEvent) => {
+  if (ev.detail.data.action === "back") {
+    router.back();
+  }
+}
 
 const cancel = () => {
   isOpen.value = false;
