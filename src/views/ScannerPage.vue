@@ -395,6 +395,8 @@ const getScannedIndex = () => {
 const resetResults = () => {
   codeResults={};
   total = 0;
+  framesRead = 0;
+  successNum = 0;
 }
 
 const onCompleted = () => {
