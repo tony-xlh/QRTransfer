@@ -6,7 +6,7 @@ import ScannerPage from '../views/ScannerPage.vue';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/home'
+    redirect: '/tabs/home',
   },
   {
     path: '/scanner',
@@ -22,7 +22,10 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'home',
-        component: () => import('@/views/HomePage.vue')
+        component: () => import('@/views/HomePage.vue'),
+        meta: {
+          title: 'Home - QR Transfer'
+        }
       },
       {
         path: 'files',

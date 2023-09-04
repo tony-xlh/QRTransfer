@@ -30,7 +30,7 @@
 import FileCard from '@/components/FileCard.vue';
 import { FilesManager, ScannedFile } from '@/utils/FilesManager';
 import { IonActionSheet, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonList } from '@ionic/vue';
-import { onMounted, onUpdated, ref } from 'vue';
+import { onUpdated, ref } from 'vue';
 
 const isSheetOpen = ref(false);
 let manager = new FilesManager();
