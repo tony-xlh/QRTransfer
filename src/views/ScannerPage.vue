@@ -17,6 +17,12 @@
           <FileCard
             :file="scannedFile"
           ></FileCard>
+          <div>
+            Speed: <span>{{ speed }}</span>
+          </div>
+          <div>
+            Elapsed time: <span>{{ seconds }}</span>
+          </div>
         </ion-content>
       </ion-modal>
       <QRCodeScanner
@@ -119,6 +125,8 @@ const twoWayCommunication = ref(false);
 const scannedIndex = ref<number[]>();
 const runtimeSettings = ref("{\"ImageParameter\":{\"BarcodeFormatIds\":[\"BF_QR_CODE\"],\"ExpectedBarcodesCount\":1,\"Name\":\"Settings\"},\"Version\":\"3.0\"}");
 const desiredCamera = ref("");
+const speed = ref("");
+const seconds = ref("");
 const actionSheetButtons = [
   {
     text: 'Back',
@@ -408,6 +416,8 @@ const showResult = async (timeElapsed:number) => {
   let blob = new Blob([array],{type: mimeType});
   let dataURL:string = await BlobAsDataURL(blob);
   scannedFile.value = {dataURL:dataURL,mimeType:mimeType,filename:filename,filesize:blob.size,timestamp:new Date().getTime()};
+  speed.value = ((blob.size/1024) / (timeElapsed/1000)).toFixed(2) + "KB/s";
+  seconds.value = (timeElapsed/1000).toFixed(3) + "s";
   isOpen.value = true;
   resetResults();
 }
