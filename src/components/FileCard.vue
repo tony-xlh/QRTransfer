@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import { ScannedFile } from '@/utils/FilesManager';
-import { IonButton,IonCard,IonCardContent,IonCardTitle,IonCardHeader,IonLabel,IonThumbnail, IonIcon } from '@ionic/vue';
+import { IonButton,IonCard,IonCardContent,IonCardTitle,IonCardHeader,IonLabel,IonThumbnail, IonIcon, ActionSheetOptions, ActionSheetButton } from '@ionic/vue';
 import { shareOutline,trashOutline } from 'ionicons/icons';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
