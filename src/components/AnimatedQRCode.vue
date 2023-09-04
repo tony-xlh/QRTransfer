@@ -18,6 +18,7 @@ const props = defineProps<{
   file:SelectedFile
   chunkSize: number
   interval: number
+  scannedIndex?: number[]
 }>()
 
 const emit = defineEmits<{
@@ -31,6 +32,9 @@ let currentIndex = 0;
 onMounted(async () => {
   if (props.file) {
     loadArrayBufferToChunks(props.file.unit8Array,props.file.filename,props.file.type)
+    if (props.scannedIndex) {
+      filterOutScannedChunks(props.scannedIndex);
+    }
     showAnimatedQRCode();
   }
 })
@@ -56,7 +60,7 @@ const showAnimatedQRCode = () => {
   chunk.value = chunks[currentIndex];
   emit("onAnimated",currentIndex,chunks.length);
   currentIndex = currentIndex + 1
-  if (currentIndex == chunks.length){
+  if (currentIndex >= chunks.length){
     currentIndex = 0;
   }
   setTimeout(showAnimatedQRCode,props.interval ?? 1000);
@@ -87,6 +91,21 @@ watch(() => props.file, (newVal, oldVal) => {
     showAnimatedQRCode();
   }
 });
+
+watch(() => props.scannedIndex, (newVal, oldVal) => {
+  if (newVal) {
+    filterOutScannedChunks(newVal);
+  }
+});
+
+const filterOutScannedChunks = (scannedIndex:number[]) => {
+  scannedIndex.sort((a,b) => b - a); //descend
+  for (let i = 0; i < scannedIndex.length; i++) {
+    const index = scannedIndex[i];
+    chunks.splice(index,1);
+  }
+}
+
 </script>
 
 <style scoped>

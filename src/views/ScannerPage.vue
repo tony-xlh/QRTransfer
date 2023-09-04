@@ -42,11 +42,12 @@
       <div class="lower">
         <div class="QRCode">
           <div v-if="isSender && selectedFile">
-            <div>{{ QRCodeCurrentIndex + "/" + QRCodeTotalNumber }}</div>
+            <div>{{ (QRCodeCurrentIndex+1) + "/" + QRCodeTotalNumber }}</div>
             <AnimatedQRCode
               :file="selectedFile"
               :chunkSize="chunkSize"
               :interval="QRCodeInterval"
+              :scannedIndex="scannedIndex"
               @on-animated="onAnimated"
             ></AnimatedQRCode>
           </div>
@@ -97,7 +98,7 @@ import { FilesManager, ScannedFile } from '@/utils/FilesManager';
 
 const viewBox = ref("0 0 1280 720");
 const barcodeResults = ref([] as TextResult[]);
-const filesQR = ref("Dynamsoft");
+const filesQR = ref("");
 const isSender = ref(false);
 const svg = ref<HTMLElement|null>(null);
 const selectedFile = ref<SelectedFile>();
@@ -113,6 +114,7 @@ const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
 const scanningStatus = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
 const twoWayCommunication = ref(false);
+const scannedIndex = ref<number[]>();
 const actionSheetButtons = [
   {
     text: 'Back',
@@ -144,6 +146,7 @@ let successNum =0;
 let codeResults:any = {};
 let total = 0;
 
+
 onMounted(async () => {
   if (getUrlParam("sender") === "true") {
     isSender.value = true;
@@ -168,6 +171,7 @@ const setActionResult = (ev: CustomEvent) => {
         scannerActive.value = false;
       }
     }
+    filesQR.value = JSON.stringify(getScannedIndex());
     twoWayCommunication.value = !twoWayCommunication.value;
   }
 }
@@ -267,13 +271,19 @@ const onScanned = (result:ScanResult) => {
     viewBox.value = "0 0 " + frameWidth  + " " + frameHeight;
   }
   barcodeResults.value = result.results;
-  framesRead = framesRead + 1;
-  if (result.results.length > 0) {
-    successNum = successNum + 1;
-    processRead(result.results[0]);
-  };
-  let endTime = new Date().getTime();
-  updateStatistics(endTime-startTime);
+  if (isSender.value === true) {
+    if (result.results.length > 0) {
+      scannedIndex.value = JSON.parse(result.results[0].barcodeText);
+    }
+  }else{
+    framesRead = framesRead + 1;
+    if (result.results.length > 0) {
+      successNum = successNum + 1;
+      processRead(result.results[0]);
+    };
+    let endTime = new Date().getTime();
+    updateStatistics(endTime-startTime);
+  }
 }
 
 const onPlayed = (resolution:string) => {
@@ -317,13 +327,32 @@ const processRead = (result:TextResult) => {
     
     total = totalOfThisOne;
     let index = parseInt(meta.split("/")[0]);
-    codeResults[index]=result;
+    if (!(index in codeResults)) {
+      codeResults[index]=result;
+      if (twoWayCommunication.value === true) {
+        updateFilesQR();
+      }
+    }
     if (Object.keys(codeResults).length === total){
       onCompleted();
     }
   } catch(error) {
     console.log(error);
   }
+}
+
+const updateFilesQR = () => {
+  filesQR.value = JSON.stringify(getScannedIndex());
+}
+
+const getScannedIndex = () => {
+  let index:number[] = [];
+  let keys = Object.keys(codeResults);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    index.push(parseInt(key));
+  }
+  return index;
 }
 
 const resetResults = () => {
