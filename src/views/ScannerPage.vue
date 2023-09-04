@@ -112,7 +112,7 @@ const QRCodeCurrentIndex = ref(0);
 const scannerActive = ref(false);
 const router = useIonRouter();
 const isOpen = ref(false);
-const layout = ref({top:'0px',left:'75%',width:'25%',height:'150px'});
+const layout = ref({top:'0px',left:'75%',width:'25%',height:'25%'});
 const scanningStatus = ref("");
 const scannedFile = ref<ScannedFile>({filename:"",mimeType:"",filesize:0,dataURL:"",timestamp:0});
 const twoWayCommunication = ref(false);
@@ -147,7 +147,6 @@ const actionSheetButtons = [
   },
 ];
 
-let fullSizeCamera = false;
 let frameHeight = 720;
 let frameWidth = 1280;
 let startTime = 0;
