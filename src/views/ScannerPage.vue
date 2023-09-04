@@ -407,7 +407,7 @@ const showResult = async (timeElapsed:number) => {
     let bytes = base64ToBytesArray(result.barcodeBytesBase64);
     let text = result.barcodeText;
     let data;
-    if (index == 1){
+    if (index === 1){
       filename = text.split("|")[1]; //the first one contains filename|image/webp|data
       mimeType = text.split("|")[2];
       let firstSeparatorIndex = text.indexOf("|");
@@ -418,6 +418,7 @@ const showResult = async (timeElapsed:number) => {
       let dataStart = text.indexOf("|")+1;
       data = bytes.slice(dataStart,bytes.length);
     }
+    console.log(data);
     jointData = jointData.concat(data);
   }
   console.log(jointData);
