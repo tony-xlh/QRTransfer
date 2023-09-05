@@ -37,9 +37,11 @@ const router = useIonRouter();
 onMounted(async () => {
   await DBR.requestCameraPermission();
   try {
-    await DBR.initLicense({license:"DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="});
+    let license = localStorage.getItem("license") ?? "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
+    await DBR.initLicense({license:license});
   } catch (error) {
-    alert("License invalid");
+    alert("License invalid. Please check your license");
+    router.push("/settings");
   }
 });
 
