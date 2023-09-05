@@ -84,11 +84,6 @@ onMounted(async () => {
   if (props.layout) {
     setLayout();
   }
-  try {
-    await DBR.initLicense({license:props.license ?? ""});  
-  } catch (error) {
-    alert("License invalid");
-  }
   let result = await DBR.initialize(options);
   if (result.success === true) {
     if (frameReadListener) {
