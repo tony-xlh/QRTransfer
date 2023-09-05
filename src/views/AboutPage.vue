@@ -12,6 +12,7 @@
       <div class="about">
         <h2>QR Transfer</h2>
         <p>This is a QR code scanner which can be used to transfer data between devices via QR codes.</p>
+        <p>The sender separates the data of a file into chunks, stores them in QR codes and displays the QR codes in a loop. The receiver can scan the QR codes to get the data. The receiver can tell the sender which QR codes have been scanned so that the sender will skip them (two-way communication).</p>
         <p>Powered by Dynamsoft Barcode Reader.</p>
         <p>Github repo: <a href="javascript:void()" @click="gitrepoClicked">https://github.com/tony-xlh/QRTransfer</a></p>
       </div>
