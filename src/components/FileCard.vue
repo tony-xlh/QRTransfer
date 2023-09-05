@@ -15,10 +15,10 @@
         </div>
         <div class="span"></div>
         <div class="action">
-          <ion-button @click="share" fill="clear">
+          <ion-button size="small" @click="share" fill="clear">
             <ion-icon slot="icon-only" :icon="shareOutline"/>
           </ion-button>
-          <ion-button v-if="showDeleteButton" @click="remove" fill="clear">
+          <ion-button size="small" v-if="showDeleteButton" @click="remove" fill="clear">
             <ion-icon slot="icon-only" :icon="trashOutline"/>
           </ion-button>
         </div>

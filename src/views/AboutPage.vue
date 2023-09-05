@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>About</ion-title>
-        <ion-button @click="goToSettingsPage" slot="end" fill="clear">
+        <ion-button size="small" @click="goToSettingsPage" slot="end" fill="clear">
           <ion-icon slot="icon-only" :icon="settingsOutline"></ion-icon>
         </ion-button>
       </ion-toolbar>
