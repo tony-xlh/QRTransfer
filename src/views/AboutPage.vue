@@ -42,12 +42,12 @@ const goToSettingsPage = () => {
 </script>
 <style scoped>
 .about {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   height: 100%;
   padding-top: 5%;
   padding-left: 2em;
   padding-right: 2em;
+}
+.about h2 {
+  text-align: center;
 }
 </style>
