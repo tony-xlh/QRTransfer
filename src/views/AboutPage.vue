@@ -3,14 +3,12 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>About</ion-title>
+        <ion-button @click="goToSettingsPage" slot="end" fill="clear">
+          <ion-icon slot="icon-only" :icon="settingsOutline"></ion-icon>
+        </ion-button>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">About</ion-title>
-        </ion-toolbar>
-      </ion-header>
       <div class="about">
         <h2>QR Transfer</h2>
         <p>This is a QR code scanner which can be used to transfer data between devices via QR codes.</p>
@@ -22,9 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonButton, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, useIonRouter } from '@ionic/vue';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
+import { settingsOutline } from 'ionicons/icons';
+const router = useIonRouter();
 const gitrepoClicked = () => {
   if (Capacitor.isNativePlatform()) {
     Share.share({
@@ -33,6 +33,10 @@ const gitrepoClicked = () => {
   }else{
     window.open("https://github.com/tony-xlh/QRTransfer","_blank");
   }
+}
+
+const goToSettingsPage = () => {
+  router.push("/settings");
 }
 </script>
 <style scoped>
