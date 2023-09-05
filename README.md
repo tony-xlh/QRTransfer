@@ -14,13 +14,21 @@ Demo videos:
 
 1. Receive a 12.9KB image.
    
-   <video src="https://github.com/tony-xlh/QRTransfer/releases/download/v1.0.0/demo.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px; max-width: 100%;"></video>
+
    
+
+https://github.com/tony-xlh/QRTransfer/assets/5462205/ac2518fa-ecba-4d11-93ff-f42832d3b1b4
+
+
    
 2. Receive a 72.4KB image.
 
    
-   <video src="https://github.com/tony-xlh/QRTransfer/releases/download/v1.0.0/large_file_demo.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px; max-width: 100%;"></video>
+
+
+https://github.com/tony-xlh/QRTransfer/assets/5462205/e5f13785-fc74-4f04-84d4-a6cef5ae7b08
+
+
    
 
    
