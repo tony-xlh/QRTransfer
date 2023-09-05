@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Settings</ion-title>
-        <ion-button @click="save" slot="end" fill="clear">
+        <ion-button size="small" @click="save" slot="end" fill="clear">
           Save
         </ion-button>
       </ion-toolbar>
