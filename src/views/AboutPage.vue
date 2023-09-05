@@ -42,7 +42,7 @@ const goToSettingsPage = () => {
 </script>
 <style scoped>
 .about {
-  height: 100%;
+  height: 95%;
   padding-top: 5%;
   padding-left: 2em;
   padding-right: 2em;
