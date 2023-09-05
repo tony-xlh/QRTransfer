@@ -46,6 +46,7 @@ const goToSettingsPage = () => {
   padding-top: 5%;
   padding-left: 2em;
   padding-right: 2em;
+  overflow: auto;
 }
 .about h2 {
   text-align: center;
