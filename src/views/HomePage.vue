@@ -33,12 +33,14 @@ import { IonButton, IonCardTitle, IonCard, IonCardHeader, IonCardContent, IonPag
 import { DBR } from 'capacitor-plugin-dynamsoft-barcode-reader';
 import { onMounted } from 'vue';
 const router = useIonRouter();
+let licenseInitialized = false;
 
 onMounted(async () => {
   await DBR.requestCameraPermission();
   try {
     let license = localStorage.getItem("license") ?? "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
     await DBR.initLicense({license:license});
+    licenseInitialized = true;
   } catch (error) {
     alert("License invalid. Please check your license");
     router.push("/settings");
@@ -46,11 +48,19 @@ onMounted(async () => {
 });
 
 const sendFile = () => {
-  router.push("/scanner?sender=true");
+  if (!licenseInitialized) {
+    alert("Please wait for the initialization of the license");
+  }else{
+    router.push("/scanner?sender=true");
+  }
 }
 
 const recieveFile = () => {
-  router.push("/scanner?sender=false");
+  if (!licenseInitialized) {
+    alert("Please wait for the initialization of the license");
+  }else{
+    router.push("/scanner?sender=false");
+  }
 }
 
 </script>
