@@ -78,17 +78,18 @@ const handleRotation = (result:any, orientation: string, rotation:number) => {
 onMounted(async () => {
   console.log(props);
   let options:Options = {};
-  if (props.license) {
-    options.license = props.license;
-  }
   if (props.dceLicense) {
     options.dceLicense = props.dceLicense;
   }
   if (props.layout) {
     setLayout();
   }
-  let result = await DBR.initialize(options); // To use your license: DBR.initialize({license: <your license>})
-  console.log(result);
+  try {
+    await DBR.initLicense({license:props.license ?? ""});  
+  } catch (error) {
+    alert("License invalid");
+  }
+  let result = await DBR.initialize(options);
   if (result.success === true) {
     if (frameReadListener) {
       frameReadListener.remove();
