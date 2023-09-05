@@ -6,11 +6,6 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Files</ion-title>
-        </ion-toolbar>
-      </ion-header>
       <FileCard v-for="(file,index) in files"
         :file="file"
         :show-delete-button="true"
