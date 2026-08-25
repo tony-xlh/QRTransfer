@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.0.0/dist/dbr.js"></script>
+<style>
+
+.statistics-container{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translate(-50%,0);
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px black;
+}
+
+.statistics-container-scanned{
+    color: black;
+}
+
+
+</style>
+</head>
+<body>
+    <div id="scanner" style="display:none;">
+        <svg class="dce-bg-loading"
+            style="display:none;position:absolute;left:0;top:0;right:0;bottom:0;margin:auto;width:40%;height:40%;fill:#aaa;animation:1s linear infinite dce-rotate;"
+            viewBox="0 0 1792 1792">
+            <path d="M1760 896q0 176-68.5 336t-184 275.5-275.5 184-336 68.5-336-68.5-275.5-184-184-275.5-68.5-336q0-213 97-398.5t265-305.5 374-151v228q-221 45-366.5 221t-145.5 406q0 130 51 248.5t136.5 204 204 136.5 248.5 51 248.5-51 204-136.5 136.5-204 51-248.5q0-230-145.5-406t-366.5-221v-228q206 31 374 151t265 305.5 97 398.5z" />
+        </svg>
+        <svg class="dce-bg-camera"
+            style="display:none;position:absolute;left:0;top:0;right:0;bottom:0;margin:auto;width:40%;height:40%;fill:#aaa;"
+            viewBox="0 0 2048 1792">
+            <path d="M1024 672q119 0 203.5 84.5t84.5 203.5-84.5 203.5-203.5 84.5-203.5-84.5-84.5-203.5 84.5-203.5 203.5-84.5zm704-416q106 0 181 75t75 181v896q0 106-75 181t-181 75h-1408q-106 0-181-75t-75-181v-896q0-106 75-181t181-75h224l51-136q19-49 69.5-84.5t103.5-35.5h512q53 0 103.5 35.5t69.5 84.5l51 136h224zm-704 1152q185 0 316.5-131.5t131.5-316.5-131.5-316.5-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5z" />
+        </svg>
+        <div class="dce-video-container" style="position:absolute;left:0;top:0;width:100%;height:100%;"></div>
+        <div class="dce-scanarea" style="position:absolute;left:0;top:0;width:100%;height:100%;">
+            <div class="dce-scanlight" style="display:none;position:absolute;width:100%;height:3%;border-radius:50%;box-shadow:0px 0px 2vw 1px #00e5ff;background:#fff;animation:3s infinite dce-scanlight;user-select:none;"></div>
+        </div>
+        <div style="position: absolute;left: 0;top: 0;">
+            <select class="dce-sel-camera" style="display: block;"></select>
+            <select class="dce-sel-resolution" style="display: block;margin-top: 5px;"></select>
+        </div>
+        <input type="button" value="Stop" onclick="stop();"  style="position:absolute;right:0;top:0;"/>
+    </div>
+    <div id="home">
+        <h1>Animated QR Code Reader</h1>
+        <input type="button" value="Start Scanning" onclick="startScanning();" />
+        </br>
+        <input type="checkbox" id="continuousChk" value="continuous" checked>
+        <label for="continuousChk">Continuous Scan</label>
+        <input type="checkbox" id="scandirectChk" value="scandirect" checked>
+        <label for="scandirectChk">Use scan-directly</label>
+        <input type="checkbox" id="largeBlockSizeChk" value="largeBlockSize" checked>
+        <label for="largeBlockSizeChk">Large block size</label>
+        <input type="checkbox" id="scanRegionChk" value="Region" checked>
+        <label for="scanRegionChk">Regional Scanning</label>
+        </br>
+        <input type="checkbox" id="templateChk" value="Template">
+        <label for="templateChk">Use template</label>
+        </br>
+        Decode file:
+        <input type="file" id="file" onchange="decodefile()"/>
+        <p>Template:</p>
+        <textarea>
+        {
+  "ImageParameter": {
+    "BarcodeColourModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "LightReflection": 1,
+        "Mode": "BICM_DARK_ON_LIGHT"
+      }
+    ],
+    "BarcodeComplementModes": [
+      {
+        "Mode": "BCM_SKIP"
+      }
+    ],
+    "BarcodeFormatIds": [
+      "BF_QR_CODE"
+    ],
+    "BarcodeFormatIds_2": null,
+    "BinarizationModes": [
+      {
+        "BlockSizeX": 61,
+        "BlockSizeY": 61,
+        "EnableFillBinaryVacancy": 1,
+        "ImagePreprocessingModesIndex": -1,
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "BM_LOCAL_BLOCK",
+        "ThreshValueCoefficient": 10
+      }
+    ],
+    "ColourClusteringModes": [
+      {
+        "Mode": "CCM_SKIP"
+      }
+    ],
+    "ColourConversionModes": [
+      {
+        "BlueChannelWeight": -1,
+        "GreenChannelWeight": -1,
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "CICM_GENERAL",
+        "RedChannelWeight": -1
+      }
+    ],
+    "DPMCodeReadingModes": [
+      {
+        "Mode": "DPMCRM_SKIP"
+      }
+    ],
+    "DeblurLevel": 3,
+    "DeblurModes": null,
+    "DeformationResistingModes": [
+      {
+        "Mode": "DRM_SKIP"
+      }
+    ],
+    "Description": "",
+    "ExpectedBarcodesCount": 0,
+    "FormatSpecificationNameArray": null,
+    "GrayscaleTransformationModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "GTM_ORIGINAL"
+      }
+    ],
+    "ImagePreprocessingModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "IPM_GENERAL"
+      }
+    ],
+    "IntermediateResultSavingMode": {
+      "Mode": "IRSM_MEMORY"
+    },
+    "IntermediateResultTypes": [
+      "IRT_NO_RESULT"
+    ],
+    "LocalizationModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "LM_SCAN_DIRECTLY"
+      }
+    ],
+    "MaxAlgorithmThreadCount": 4,
+    "Name": "Settings",
+    "PDFRasterDPI": 300,
+    "PDFReadingMode": {
+      "Mode": "PDFRM_AUTO"
+    },
+    "Pages": "",
+    "RegionDefinitionNameArray": [
+      "Settings"
+    ],
+    "RegionPredetectionModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "RPM_GENERAL"
+      }
+    ],
+    "ResultCoordinateType": "RCT_PIXEL",
+    "ReturnBarcodeZoneClarity": 0,
+    "ScaleDownThreshold": 2300,
+    "ScaleUpModes": [
+      {
+        "Mode": "SUM_AUTO"
+      }
+    ],
+    "TerminatePhase": "TP_BARCODE_RECOGNIZED",
+    "TextAssistedCorrectionMode": {
+      "BottomTextPercentageSize": 0,
+      "LeftTextPercentageSize": 0,
+      "LibraryFileName": "",
+      "LibraryParameters": "",
+      "Mode": "TACM_VERIFYING",
+      "RightTextPercentageSize": 0,
+      "TopTextPercentageSize": 0
+    },
+    "TextFilterModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "MinImageDimension": 65536,
+        "Mode": "TFM_GENERAL_CONTOUR",
+        "Sensitivity": 0
+      }
+    ],
+    "TextResultOrderModes": [
+      {
+        "Mode": "TROM_CONFIDENCE"
+      },
+      {
+        "Mode": "TROM_POSITION"
+      },
+      {
+        "Mode": "TROM_FORMAT"
+      }
+    ],
+    "TextureDetectionModes": [
+      {
+        "LibraryFileName": "",
+        "LibraryParameters": "",
+        "Mode": "TDM_GENERAL_WIDTH_CONCENTRATION",
+        "Sensitivity": 5
+      }
+    ],
+    "Timeout": 10000
+  },
+  "RegionDefinition": {
+    "BarcodeFormatIds": [
+      "BF_QR_CODE"
+    ],
+    "BarcodeFormatIds_2": null,
+    "Bottom": 100,
+    "ExpectedBarcodesCount": 1,
+    "FormatSpecificationNameArray": null,
+    "Left": 0,
+    "MeasuredByPercentage": 1,
+    "Name": "Settings",
+    "Right": 100,
+    "Top": 0
+  },
+  "Version": "3.0"
+}
+        </textarea>
+    </div>
+    <div id="statistics" class="statistics-container">
+        <pre id="statisticsPre">
+        </pre>
+    </div>
+    <div id="decodedResults">
+        Results:
+        <ol id="decodedList">
+        </ol>
+    </div>
+  <script>
+    Dynamsoft.DBR.BarcodeReader.license = 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==';
+    // initializes and uses the library
+    var startTime = 0;
+    var framesRead = 0;
+    var successNum =0;
+    var code_results = {};
+    var total = 0;
+    var scanner = null;
+    
+    let pScanner = null;
+
+    init();
+    
+    async function init(){
+        scanner = await (pScanner = pScanner || Dynamsoft.DBR.BarcodeScanner.createInstance());
+        await scanner.setUIElement(document.getElementById('scanner'));
+        scanner.onFrameRead = results => {
+            
+            framesRead = framesRead + 1;
+            if (results.length > 0) {
+                successNum = successNum + 1;
+                processRead(results[0]);
+            };
+            var endTime = new Date().getTime();
+            updateStatistics(endTime-startTime);
+        };
+        scanner.onPlayed = rsl =>{ 
+            startTime = new Date().getTime();
+        };
+        scanner.onUnduplicatedRead = (txt, result) => {
+        };
+        console.log("init done");
+    }
+    
+    async function startScanning(){
+        if (scanner==null){
+            alert("Please wait for the initialization of the scanner.")
+            return;
+        }
+        resetResults();
+        var scannerContainer = document.getElementById("scanner");
+        scannerContainer.style.display = "";
+        var homeContainer = document.getElementById("home");
+        homeContainer.style.display = "none";
+        var statisticsContainer = document.getElementById("statistics");
+        statisticsContainer.className="statistics-container";
+        var decodedResultsContainer = document.getElementById("decodedResults");
+        decodedResultsContainer.style.display = "none";
+        var decodedList = document.getElementById("decodedList");
+        decodedList.innerHTML="";
+        framesRead = 0;
+        successNum = 0;
+        await scanner.show();
+        updateSettings(scanner,false);
+    }
+    
+    function resetResults(){
+        code_results={};
+        total = 0;
+    }
+    
+    async function stop(){
+        await scanner.stop();
+        var scannerContainer = document.getElementById("scanner");
+        scannerContainer.style.display = "none";
+        var homeContainer = document.getElementById("home");
+        homeContainer.style.display = "";
+        var statisticsContainer = document.getElementById("statistics");
+        statisticsContainer.className="statistics-container-scanned";
+        var decodedResultsContainer = document.getElementById("decodedResults");
+        decodedResultsContainer.style.display = "";
+    }
+    
+    function updateStatistics(timeElapsed){
+        var statisticsPre = document.getElementById("statisticsPre");
+        statistics = "elapsed time: " + (timeElapsed)/1000 +"s";
+        statistics = statistics +"\ntotal frame number: " + framesRead;
+        statistics = statistics +"\nsuccessful number: " + successNum;
+        statistics = statistics +"\nsuccess fps: " + (successNum/(timeElapsed/1000)).toFixed(2);
+        statistics = statistics +"\nprogress: " + getObjectLength(code_results) + "/" + total;
+        statisticsPre.innerHTML=statistics;
+    }
+    
+    function processRead(result){
+        var text = result["barcodeText"];
+        try {
+            var meta = text.split("|")[0];
+            var totalOfThisOne = parseInt(meta.split("/")[1]);
+            if (total!=0){
+                if (total != totalOfThisOne){
+                    total = totalOfThisOne;
+                    code_results={};
+                    return;
+                }
+            }
+            
+            total = totalOfThisOne;
+            var index = parseInt(meta.split("/")[0]);
+            code_results[index]=result;
+            if (getObjectLength(code_results)==total){
+                console.log("completed");
+                console.log(code_results);
+                onCompleted();
+            }
+        
+        } catch(error) {
+            console.log(error);
+        }
+    }
+    
+    function onCompleted(){
+        var continuous = document.getElementById("continuousChk").checked;
+        var endTime = new Date().getTime();
+        timeElapsed = endTime - startTime;
+        if (continuous==false){
+            stop();
+            var decodedResultsContainer = document.getElementById("decodedResults");
+            decodedResultsContainer.style.display = "";
+        }else{
+            startTime = new Date().getTime();
+            framesRead = 0;
+            successNum = 0;
+        }
+        updateStatistics(timeElapsed);
+        showResult(timeElapsed);
+    }
+    
+    function getObjectLength(obj){
+        return getObjectKeys(obj).length;
+    }
+    
+    function getObjectKeys(obj){
+        return Object.keys(obj);
+    }
+    
+    async function showResult(timeElapsed){
+        var jointData = [];
+        for (var i=0;i<getObjectLength(code_results);i++){
+            var index = i+1;
+            var result = code_results[index];
+            console.log(result);
+            var bytes = result.barcodeBytes;
+            var text = result.barcodeText;
+            if (index == 1){
+                var filename = text.split("|")[1]; //the first one contains filename|image/webp|data
+                var mimeType = text.split("|")[2];
+                var firstSeparatorIndex = text.indexOf("|");
+                var secondSeparatorIndex = text.indexOf("|",firstSeparatorIndex+1);
+                var dataStart = text.indexOf("|",secondSeparatorIndex+1)+1;
+                data = bytes.slice(dataStart,bytes.length);
+            }else{
+                var dataStart = text.indexOf("|")+1;
+                data = bytes.slice(dataStart,bytes.length);
+            }
+            jointData = jointData.concat(data);
+        }
+        var decodedList = document.getElementById("decodedList");
+        var item = document.createElement("li");
+        decodedList.appendChild(item);
+        var dataURL = await ArraybufferAsDataURL(jointData,mimeType);
+        appendDownloadLink(item, dataURL,filename);
+        var info = document.createElement("span");
+        info.innerText = " elapsed time: " + timeElapsed + "ms" +" speed: "+ (jointData.length/1024/(timeElapsed/1000)).toFixed(2) +"KB/s";
+        item.appendChild(info);
+        if (dataURL.indexOf("image")!=-1) {
+            var img = document.createElement("img");
+            img.src = dataURL;
+            img.style.display = "block";
+            img.style.maxHeight = "350px";
+            img.style.maxWidth = "100%";
+            item.appendChild(img);
+        }
+        resetResults();
+    }
+    //https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string
+    const ArraybufferAsDataURL = async (data,mimeType) => {
+        // Use a FileReader to generate a base64 data URI
+        const dataUrl = await new Promise((r) => {
+            const reader = new FileReader()
+            reader.onload = () => r(reader.result)
+            var array = ConvertToUInt8Array(data);
+            var blob = new Blob([array],{type: mimeType});
+            reader.readAsDataURL(blob)
+        })
+
+        /*
+        The result looks like 
+        "data:application/octet-stream;base64,<your base64 data>", 
+        so we split off the beginning:
+        */
+        return dataUrl;
+    }
+    
+    function ConvertToUInt8Array(data){
+        var array = new Uint8Array(data.length);
+        for (var i=0;i<data.length;i++){
+            array[i] = data[i];
+        }
+        return array;
+    }
+    
+    function appendDownloadLink(item, dataURL,filename){
+        var link = document.createElement('a');
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', dataURL);
+        if (!filename){
+            filename = "file";
+        }
+        filename = decodeURIComponent(filename);
+        link.setAttribute('download', filename);
+        link.innerText=filename;
+        item.appendChild(link);
+    }
+    
+    async function updateSettings(instance,isReader){
+        await instance.resetRuntimeSettings();
+        let settings = await instance.getRuntimeSettings();
+        settings.deblurLevel = 0;
+        settings.barcodeFormatIds = Dynamsoft.DBR.EnumBarcodeFormat.BF_QR_CODE;
+        if (isReader==false){
+            if (document.getElementById("scanRegionChk").checked){
+                settings.region.regionMeasuredByPercentage = 1;
+                var video = document.getElementsByTagName("video")[0];
+                if (video.videoHeight>video.videoWidth){
+                    settings.region.regionLeft = 0;
+                    settings.region.regionTop = 25;
+                    settings.region.regionRight = 100;
+                    settings.region.regionBottom = 75;
+                }else{
+                    settings.region.regionLeft = 25;
+                    settings.region.regionTop = 0;
+                    settings.region.regionRight = 75;
+                    settings.region.regionBottom = 100;
+                }
+            }
+        }
+        
+        if (document.getElementById("scandirectChk").checked){
+            settings.localizationModes = [Dynamsoft.DBR.EnumLocalizationMode.LM_SCAN_DIRECTLY, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
+        if (document.getElementById("largeBlockSizeChk").checked){
+            await instance.setModeArgument("BinarizationModes",0,"EnableFillBinaryVacancy","0");
+            await instance.setModeArgument("BinarizationModes",0,"BlockSizeX","61");
+            await instance.setModeArgument("BinarizationModes",0,"BlockSizeY","61");
+        }
+        
+        await instance.updateRuntimeSettings(settings);
+        if (document.getElementById("templateChk").checked){
+            var template = document.getElementsByTagName("textarea")[0].value;
+            if (template!=""){
+                await instance.initRuntimeSettingsWithString(template);
+                console.log("template inited");
+            }
+        }
+        
+    }
+    
+    async function decodefile(){
+        let files = document.getElementById('file').files;
+        if (files.length == 0) {
+            return;
+        }
+        let reader = await Dynamsoft.DBR.BarcodeReader.createInstance();
+        await updateSettings(reader,true);
+        var file = files[0];
+        var timeOfBegin = new Date().getTime();
+        console.log("decoding");
+        let results = await reader.decode(file);
+        if (results.length>0){
+            console.log(results);
+            var timeOfEnd = new Date().getTime();
+            alert("Detected. Elapsed time: "+(timeOfEnd-timeOfBegin));
+        }else{
+            alert("No barcodes detected.")
+        }
+    }
+    
+  </script>
+</body>
+
+</html>
